@@ -1,0 +1,225 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" 
+                access="global" controller="JiraTaskManagerViewHelper">
+    
+    <aura:import library="lightning:alert" property="LightningAlert" />
+    
+    <aura:attribute name="ProjectId" type="string" default="" />
+    <aura:attribute name="recordId" type="string" default="a1U6D00000103KMUAY" />
+    <aura:attribute name="ProjectLeadId" type="string" default=""/>
+    <aura:attribute name="TeamMateId" type="string" default=""/>
+    <aura:attribute name="assigneeId" type="string" default=""/>
+    <aura:attribute name="filledDescription" type="string" default=""/>
+    <aura:attribute name="DesignDescription" type="string" default=""/>
+    <aura:attribute name="index" type="integer" default=""/>    
+    <aura:attribute name="objInfo" type="Jira_Task__c" default="{'sobjectType': 'Jira_Task__c',
+                                                                'Module__c': '',
+                                                                'Description__c': '',
+                                                                'Solution_Details_if_any__c': '',
+                                                                'Priority__c': '',
+                                                                'Team_Member__c': '',
+                                                                'Stand_By_Resource__c':'',
+                                                                'Estimated_Efforts__c': '',
+                                                                'Estimated_End_Date__c': '',}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="label" type="string" default="Update Detailed Description"/>
+    <aura:attribute name="jiraTaskList" type="Jira_Task__c[]"/>
+    <aura:attribute name="industryMap" type="Map"/>
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="uploadFile" type="boolean" default="false"/>
+    <aura:attribute name="showSpinner" type="boolean" default="false"/>
+    
+    <!-- ######################### attributes for custom data table ######################## -->
+    <aura:attribute name="data" type="Map"/>
+    <aura:attribute name="filteredData" type="Map"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="ProjectTaskListWrapper" type="List" default=""/>
+    <!-- aura:handler name="init" value="{! this }" action="{! c.init }"/ -->
+    
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.}"/> -->
+    
+    
+    
+    <lightning:card title="Task Assignment..📝📝" class="slds-text-title--caps">
+        <aura:if isTrue="{!v.showSpinner}">
+            <div class="exampleHolder">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </div>
+        </aura:if>
+        <lightning:card >
+            <div class="slds-float_right slds-m-around_small slds-icon_container slds-icon-utility-add">
+                <h1 class="slds-page-header__title">Add Row
+                    <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.handleAddRow}"/>
+                </h1>
+            </div>
+            <div style = "border-style: solid;overflow-x:auto;width:100%;">
+                <table class="slds-table slds-table--striped slds-table_bordered slds-table_fixed-layout slds-max-medium-table_stacked" style="zoom: 80%;">
+                    
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="action:new_child_case" size="small" alternativeText="Indicates approval"/>
+                                    Project
+                                </span>
+                            </th>
+                            <th scope="col" >
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="action:add_file" size="small" alternativeText="Indicates approval"/>
+                                    Module
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="action:priority" size="small" alternativeText="Indicates approval"/>
+                                    Priority
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span style="margin-left: 8%;" class="slds-truncate">
+                                    <lightning:icon iconName="action:join_group" size="small" alternativeText="Indicates approval"/>
+                                    Team Member
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="action:new_event" size="small" alternativeText="Indicates approval"/>
+                                    Start Date Time
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="action:new_event" size="small" alternativeText="Indicates approval"/>
+                                    End Date Time
+                                </span>
+                            </th>
+                            
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="action:goal" size="small" alternativeText="Indicates approval"/>
+                                    Choose Action
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="action:download" size="small" alternativeText="Indicates approval"/>
+                                    Upload Docs
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody >
+                        <aura:iteration items="{!v.jiraTaskList}" var="acc" indexVar="index">
+                            <tr id ="{!index}"> 
+                                <td>  
+                                    <aura:if isTrue="{!!not(empty(acc.Id))}">
+                                        <div class="header-column slds-text-title--caps">
+                                            <br/>
+                                            <c:JiraTaskManagerView value="{!v.ProjectId}" objectName="Project__c" fieldName="Name" iconName="standard:partner_fund_claim" placeholder="Select Project" />
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <br/>
+                                            <lightning:input type="text" name="Team Member"  disabled="true" value="{!acc.Project_Name__c}" />
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                                
+                                <td>  
+                                    <aura:if isTrue="{!!not(empty(acc.Id))}">
+                                        <div class="header-column slds-text-title--caps">
+                                            <br/>
+                                            <c:CustomLookUpComp sObject="Module__c" methodName="c.searchModules" selected="{!acc.Module__c}" recordId="{!v.ProjectId}" isPRM="true"/>
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <br/>
+                                            <lightning:input type="text" name="Team Member"  disabled="true" value="{!acc.Module_Name__c}" />
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                                <td>
+                                    <br/>
+                                    <aura:if isTrue="{!!not(empty(acc.Id))}">
+                                        <lightning:select aura:id="industryPicklist" value="{!acc.Priority__c}"  name="industryPicklist" >
+                                            <option value="">--None--</option>
+                                            <aura:iteration items="{!v.industryMap}" var="ind" indexVar="key">
+                                                <option text="{!ind.value}" vaōlue="{!ind.value}" />
+                                            </aura:iteration>
+                                        </lightning:select>
+                                        <aura:set attribute="else">
+                                            <lightning:input type="text" name="Team Member"  disabled="true" value="{!acc.Priority__c}" />
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                                
+                                <td>
+                                    <br/>
+                                    <aura:if isTrue="{!!not(empty(acc.Id))}">
+                                        <div class="header-column slds-text-title--caps">
+                                            <c:CustomLookupComponent Message="{!v.ProjectId}" selectedRecord ="{!acc.Team_Member__c}"/>
+                                        </div> 
+                                        <aura:set attribute="else">
+                                            <lightning:input type="text" name="Team Member"  disabled="true" value="{!acc.Team_Member_Name__c}" />
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                                
+                                
+                                <td>
+                                    <aura:if isTrue="{!!not(empty(acc.Id))}">
+                                        <lightning:input name="jiraEsti" aura:id="startdatetime"  type="datetime"  value="{!acc.Task_Start_Date_Time__c}"/>
+                                        <aura:set attribute="else">
+                                            <lightning:input  type="datetime" aura:id="startdatetime" name="Team Member" hour12="true"  disabled="true" value="{!acc.Task_Start_Date_Time__c}" />
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                                
+                                <td>
+                                    <aura:if isTrue="{!!not(empty(acc.Id))}">
+                                        <lightning:input name="jiraEsti" type="datetime"  aura:id="enddatetime" value="{!acc.Task_End_Date_Time__c}"/>
+                                        <aura:set attribute="else">
+                                            <lightning:input type="datetime"  aura:id="enddatetime" name="Team Member" hour12="true" disabled="false" value="{!acc.Task_End_Date_Time__c}" />
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                                
+                                
+                                <td>
+                                    <br/>
+                                    <button class="slds-button slds-button_brand" onclick="{!c.showModel}" id="{!index}">Requirement</button>
+                                    <a onclick="{!c.removeRecord}" data-record="{!index}" style="margin-left: 2%;">
+                                        <lightning:icon iconName="utility:delete" size="medium" alternativeText="Delete"/>
+                                        <span class="slds-assistive-text">Delete</span>
+                                    </a>
+                                </td>
+                                
+                                <td>
+                                    <br/>
+                                    <aura:if isTrue="{!not(empty(acc.Id))}">
+                                        <button class="slds-button slds-button_brand" onclick="{!c.uploadFile}" id="{!index}">Upload</button>
+                                        <aura:if isTrue="{!v.uploadFile}">
+                                            <c:FileUpload parentId = "{!acc.Id}" isModalOpen="{!v.uploadFile}"/>  
+                                        </aura:if>
+                                    </aura:if>
+                                </td>
+                                
+                                
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                    
+                </table>
+            </div>
+            <br/>
+            <div class="slds-align_absolute-center slds-p-top_small slds-p-around_medium">
+                <h1 class="slds-page-header__title">
+                    <lightning:button variant="brand" label="Submit" iconPosition="center" onclick="{!c.saveRecord}" />
+                </h1>
+            </div>
+        </lightning:card>
+        <aura:if isTrue="{!v.isModalOpen}">
+            <c:CaptureProjectDescription jiraTaskList ="{!v.jiraTaskList}" index="{!v.index}" isModalOpen="{!v.isModalOpen}" label="{!v.label}" isEditable="false"/>
+        </aura:if>
+        
+    </lightning:card>
+    
+</aura:component>

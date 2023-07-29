@@ -1,0 +1,154 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global"  controller="CreateProjectTaskList">
+    
+    <!-- ######################### attributes forc Method Parameter ######################## -->
+    <aura:attribute name="ProjectId" type="string" default="" />
+     <aura:attribute name="ProjectLeadId" type="string" default=""/>
+     <aura:attribute name="TeamMateId" type="string" default=""/>
+    <aura:attribute name="StartDate" type="date" default=""/>
+    <aura:attribute name="EndDate" type="date" default=""/>
+   
+    
+    <!-- ######################### attributes for custom data table ######################## -->
+      <aura:attribute name="data" type="Map"/>
+    <aura:attribute name="filteredData" type="Map"/>
+    <aura:attribute name="columns" type="List"/>
+     <aura:attribute name="ProjectTaskListWrapper" type="List" default=""/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+	<lightning:card>
+        <div class="c-container">
+            <lightning:layout >
+                <lightning:layoutItem padding="around-small" size="2">
+                <div class="header-column">
+                    <c:JiraTaskManagerView value="{!v.ProjectId}" objectName="Project__c" fieldName="Name" label="Project Name" iconName="standard:opportunity" placeholder="Enter Value" />
+               
+                    </div>
+            </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                <div class="header-column">
+                    <c:JiraTaskManagerView value="{!v.ProjectLeadId}" objectName="Contact" fieldName="Name" label="Project Lead" iconName="standard:employee" placeholder="Enter Value" />
+                </div>
+            </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                <div class="header-column">
+                    <c:JiraTaskManagerView value="{!v.TeamMateId}" objectName="Contact" fieldName="Name" label="Team Mate" iconName="standard:employee" placeholder="Enter Value" />
+                </div>
+            </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                <div class="header-column">
+                     <lightning:input type="date" name="input1" label="Start Date" value="{!v.StartDate}"/>
+               </div>
+            </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                <div class="header-column">
+                     <lightning:input type="date" name="input2" label="End Date" value="{!v.EndDate}" />
+                    </div>
+                    </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="3">
+                <div class="header-column">
+                   <lightning:button variant="success" label="Search" iconPosition="right" onclick="{!c.handleClick }" />
+                    <div style="height: 300px">
+        <lightning:datatable
+                keyField="id"
+                data="{! v.data }"
+                columns="{! v.columns }"
+                hideCheckboxColumn="true"/>
+    </div>
+       
+                </div>
+            </lightning:layoutItem>
+            
+            </lightning:layout>
+        
+        </div>
+    
+    </lightning:card>
+    
+   
+    	 <lightning:card>
+      <lightning:tabset>
+          
+        <lightning:tab>
+                             
+     <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Jira Task">Jira ID</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Contact">Team Member</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Project">Project</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Module">Module</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="TaskDescription ">Task Description</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Status">Status</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="EstimatedEffrots">Estimated Efforts</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="ActualEfforts">Actual Efforts</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="IsOverdue">Is Overdue</div>
+                            </th>
+                        </tr>
+                    </thead>
+                   <aura:if isTrue="{!v.ProjectTaskListWrapper.length > 0}">
+                    <tbody>
+                        <aura:iteration items="{!v.ProjectTaskListWrapper}" var="task">
+                            <tr class="slds-hint-parent">
+                                 
+                                <th data-label="Jira Id" scope="row">
+                                    <div class="slds-truncate" title="{!task.JiraId}"> {!task.JiraId}</div>
+                                </th>
+                                
+                                <td data-label="Team Member">
+                                    <div class="slds-truncate" title="{!task.TeamMember}">{!task.TeamMember}</div>
+                                </td>
+                                <td data-label="Project Name">
+                                    <div class="slds-truncate" title="{!task.ProjectName}">{!task.ProjectName}</div>
+                                </td>
+                                <td data-label="Module Name">
+                                    <div class="slds-truncate" title="{!task.ModuleName}">{!task.ModuleName}</div>
+                                </td>
+                                 <td data-label="Task Description">
+                                    <div class="slds-truncate" title="{!task.TaskDescription}">{!task.TaskDescription}</div>
+                                </td>
+                                <td data-label="Status">
+                                    <div class="slds-truncate" title="{!task.Status}">{!task.Status}</div>
+                                </td>
+                               <td data-label="Estimated Effort ">
+                                    <div class="slds-truncate" title="{!task.EstimatedEffort}">{!task.EstimatedEffort}</div>
+                                </td>
+                               <td data-label="Actual Efforts">
+                                    <div class="slds-truncate" title="{!task.ActualEfforts}">{!task.ActualEfforts}</div>
+                                </td>
+                               <td data-label="Is OverDue">
+                                    <div class="slds-truncate" title="{!task.IsOverDue}">{!task.IsOverDue}</div>
+                                </td>
+                            
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                        </aura:if>
+         <!-- <aura:if isTrue="{!empty(v.ProjectTaskListWrapper)}">
+                <div class="slds-align_absolute-center">
+                     
+                </div>
+                  </aura:if>-->
+                </table>
+                </lightning:tab>         
+           </lightning:tabset>
+    </lightning:card>
+            
+	
+</aura:component>

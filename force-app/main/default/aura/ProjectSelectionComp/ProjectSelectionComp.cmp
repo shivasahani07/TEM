@@ -1,0 +1,32 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller = "LookupController">
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="selectProjectDisplay" type="boolean" default="false" />
+    <aura:attribute name="displayDailyLineItems" type="boolean" default="false" />
+    
+    <aura:if isTrue="{!v.checkSpinner}">
+        <div class="exampleHolder">
+            <lightning:spinner alternativeText="Loading" size="medium" />
+        </div>
+    </aura:if>
+    
+    <Lightning:card class="slds-m-around_xx-small slds-m-top_none slds-m-bottom_none slds-card__body transform">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_0.5-of-4">
+            </div>
+            <div class="slds-col slds-size_2-of-4">
+                <lightning:button label="SELECT YOUR PROJECT" title="SELECT YOUR PROJECT" variant="brand"  iconName="utility:component_customization" onclick="{!c.showProjectAdditionComp}" ></lightning:button>
+            </div>
+            <div class="slds-col slds-size_2-of-4">
+                <lightning:button label="UPDATE TIME ENTRY" title="UPDATE TIME ENTRY" variant="brand"  iconName="utility:date_time" onclick="{!c.showLineItemsAdditionComp}" ></lightning:button>
+            </div>
+        </div>
+    </Lightning:card>   
+    
+    <aura:if isTrue="{!v.selectProjectDisplay}">
+        <c:ProjectAdditonComp recordId="{!v.recordId}" selectProjectDisplay= "{!v.selectProjectDisplay}" displayDailyLineItems = "{!v.displayDailyLineItems}" />
+    </aura:if>
+    
+    <aura:if isTrue="{!v.displayDailyLineItems}">
+        <c:CreateDailyLineItemsCmp recordId="{!v.recordId}" displayDailyLineItems= "{!v.displayDailyLineItems}" />
+    </aura:if>
+</aura:component>

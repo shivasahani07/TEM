@@ -1,0 +1,257 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" renderAs="pdf"  controller="Generate_Invoice_Project_Controller" >
+    <html>
+        <head>
+            
+            <style>
+                
+            </style>
+            <script type = "text/javascript">
+            
+            </script>
+        </head>
+        <apex:form >
+            <body >
+                <div>
+                    <br/>
+                    <div class="row" style="font-family: arial, sans-serif;">
+                        
+                        <div class="col-sm-1"><hr style="height:20px; background-color: #ff9900;margin-top:10%;"/></div>
+                        
+                        <div class="col-sm-10" style="width:90%;align:center;margin-left:5%; font-style: normal;">
+                            <div class="row">
+                                <div class="col-sm-10" style="">
+                                    <div style="margin-top:0%;">
+                                        <div class="row" style="background-color: #f2f2f2;margin-top:2%;">
+                                            <table width="100%" style="margin-top:0%;font-weight: 100;">    
+                                                <tr>
+                                                    <th>
+                                                        <apex:image url="{!$Resource.logo}" width="180" height="40"/> 
+                                                    </th>
+                                                    <th style="">
+                                                        <h2 style="text-align:center;margin-top:0%;font-size: 20px;height:2px;color:#808080;"><b>TAX INVOICE</b></h2>   
+                                                    </th>
+                                                </tr>
+                                                
+                                                <tr>    
+                                                    <th style="">
+                                                        <div style="font-weight: 100;">
+                                                            
+                                                            <div style="font-size: 13px;width:180px;margin-top:10px;">{!invDetails.Company_Name__c} </div>
+                                                            <div style="font-size: 10px;width:150px;margin-top:10px;">{!invDetails.Address__c} </div>
+                                                            <div style="font-size: 10px;margin-top:10px;">PHONE : {!invDetails.Phone__c} </div>   
+                                                        </div>
+                                                        
+                                                    </th >    
+                                                    <th style="width:50%" >
+                                                        
+                                                        <table width="100%" style="margin-top:0px;font-weight: 100;" >
+                                                            <thead style="font-style: normal;">
+                                                                <tr style="text-align:center;margin-top:0%;font-size: 14px;">
+                                                                    <th style="text-align:center;font-weight: 100;border-bottom: 1px solid #A9A9A9;">{!accountDetails.invoices__r[0].name}</th>
+                                                                    <th style="text-align:center;font-weight: 100;border-bottom: 1px solid #A9A9A9;"> <apex:outputText value="{0,date,dd/MM/yyyy(d MMM)}"> <apex:param value="{!generationDate}" /> </apex:outputText></th>
+                                                                </tr>
+                                                                
+                                                            </thead>
+                                                            
+                                                            <tbody style="text-align:left;font-size: 10px;">                                                    
+                                                                <tr style="padding: 3px;">
+                                                                    <td style="padding: 3px;">Company PAN</td>
+                                                                    <td style="padding: 3px;">{!invDetails.Company_PAN__c}</td>
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">Company TAN</td>
+                                                                    <td style="padding: 3px;">{!invDetails.Company_TAN__c}</td>
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">GST Reg. No   </td>
+                                                                    <td style="padding: 3px;">
+                                                                        <apex:outputPanel rendered="{!accountDetails.Banglore_GSTIN_applicable__c}">
+                                                                            {!invDetails.GST_Reg_No__c}
+                                                                        </apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!accountDetails.Banglore_GSTIN_applicable__c == false}">
+                                                                            {!invDetails.Faridabad_GST_Reg_no__c}
+                                                                        </apex:outputPanel>
+                                                                    </td>
+                                                                    
+                                                                    
+                                                                    <!--td style="padding: 3px;">{!invDetails.GST_Reg_No__c}</td-->
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">
+                                                                        <apex:outputPanel rendered="{!accountDetails.Tax_Invoice__c}">
+                                                                            TAX Invoice
+                                                                        </apex:outputPanel>
+                                                                    </td>
+                                                                    <td style="padding: 3px;">
+                                                                        <apex:outputPanel rendered="{!accountDetails.Tax_Invoice__c}">
+                                                                            Yes
+                                                                        </apex:outputPanel>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">
+                                                                        <apex:outputPanel rendered="{!accountDetails.Place_of_Supply__c}">
+                                                                            Place of Supply
+                                                                        </apex:outputPanel>
+                                                                    </td>
+                                                                    <td style="padding: 3px;">
+                                                                        <apex:outputPanel rendered="{!accountDetails.Place_of_Supply__c}">
+                                                                            Karnataka
+                                                                        </apex:outputPanel>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">SAC Code </td>
+                                                                    <td style="padding: 3px;">{!invDetails.SAC_Code__c}</td>
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">Account Number</td>
+                                                                    <td style="padding: 3px;">{!invDetails.Account_Number__c}</td>
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">Bank Name </td>
+                                                                    <td style="padding: 3px;">{!invDetails.Bank_Name__c}</td>
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">Bank IFSC Code</td>
+                                                                    <td style="padding: 3px;">{!invDetails.Bank_IFSC_Code__c}</td>
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="padding: 3px;">Bank Swift Code</td>
+                                                                    <td style="padding: 3px;">{!invDetails.Bank_Swift_Code__c}</td>
+                                                                    
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </th>    
+                                                </tr>    
+                                            </table>      
+                                            
+                                        </div>
+                                        <div class="row" style="margin-top:4%;">
+                                            <div class="col-sm-12">
+                                                <div class="detail-block">
+                                                    <div class="details">
+                                                        <div style="width:100%;font-size: 12px;">
+                                                            <div style="width:40%;diplay:inline;float:left;">
+                                                                <div>BILL TO</div> 
+                                                                <hr style=" border: 1px solid #A9A9A9" />
+                                                                <div class ="Billingstreet" style="margin-top:0%" >
+                                                                    <div style="margin-bottom:1%">
+                                                                        Accounts Team
+                                                                    </div>
+                                                                    <b>Billing Address : </b> {!accountDetails.Billingstreet} {!accountDetails.Billingcity}
+                                                                    <div>
+                                                                        {!accountDetails.BillingState}&nbsp;&nbsp;{!accountDetails.BillingPostalCode}<br/>
+                                                                        <apex:outputPanel rendered="{!accountDetails.Shipping_Address__c}">
+                                                                            <div style="margin-top:1%">
+                                                                                <b>Shipping Address :</b> {!accountDetails.invoices__r[0].Shipping_Address__c}
+                                                                            </div>
+                                                                        </apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!accountDetails.Phone != null}">
+                                                                            <div style="margin-top:1%">
+                                                                                <b>Phone : </b>{!accountDetails.Phone}
+                                                                            </div>
+                                                                        </apex:outputPanel>
+                                                                        
+                                                                        
+                                                                        <apex:outputPanel rendered="{!accountDetails.GSTIN__c != null}">
+                                                                            <div style="margin-top:1%">
+                                                                                <b>GSTIN :</b>{!accountDetails.GSTIN__c}
+                                                                            </div>
+                                                                        </apex:outputPanel>
+                                                                    </div>
+                                                                </div> 
+                                                                <a> {!accountDetails.website}</a>
+                                                            </div>
+                                                            <div style="width:10%;diplay:inline;float:left;">
+                                                                <span>&nbsp;</span>
+                                                            </div>
+                                                            
+                                                        </div>                                                
+                                                    </div>  
+                                                </div>
+                                                
+                                            </div>                                   
+                                        </div>    
+                                    </div>
+                                    <div class="row" >
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                
+                                                <table  width="100%" style="margin-top:22%;font-size: 12px;border-style: solid" >
+                                                    <thead style="background-color: #ff9900;text-align:center;">
+                                                        <tr >
+                                                            <th>NAME</th>
+                                                            <th>ROLE</th>
+                                                            <th style="width:27%;">TOTAL EFFORTS</th>
+                                                            <th style="width:23%;">HOURLY RATE</th>
+                                                            <th style="width:23%;">TOTAL</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody style="text-align: center;border-style: solid;margin :1%">
+                                                        <apex:repeat value="{!wrapperList}" var="resoruce" id="theRepeat">
+                                                            <tr style="text-align: center;border-style: solid;margin :1%">
+                                                                <td >{!resoruce.resourceName}</td>
+                                                                <td>{!resoruce.resourceRole}</td>
+                                                                <td >{!resoruce.resourceEfforts}</td>
+                                                                <td>{!resoruce.resourcePrice}</td>
+                                                                <td>{!resoruce.resourceOutcome}</td>
+                                                            </tr>  
+                                                        </apex:repeat>
+                                                        <br/>
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>    
+                                        </div>                                    
+                                    </div>
+                                    
+                                    
+                                    <div class="row" style="margin-top:4%;">
+                                            <div style="width:40%;float:right;">
+                                                <hr style=" border: 1px solid #A9A9A9" />
+                                                <table>
+                                                    <b>
+                                                        <tr>
+                                                            <td>TOTAL</td>
+                                                            <td> : {!totalvalue}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>CGST(9%)</td>
+                                                            <td> : {!CGSTvalue}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>SGST(9%)</td>
+                                                            <td> : {!SGSTvalue}</td>
+                                                        </tr>
+                                                        <hr style=" border: 1px solid #A9A9A9" />
+                                                        <tr>
+                                                            <td>Balance Due</td>
+                                                            <td> : {!finalAmount} /- </td>
+                                                        </tr>
+                                                    </b>
+                                                </table>
+                                            </div>                              
+                                    </div>  
+                                </div>
+                            </div>
+                            <br/>
+                        </div>
+                        <br/><br/><br/>
+                        <div class="col-sm-1" style="margin-top:8%;"><hr style="height:20px;background-color: #ff9900;"/>
+                        </div>
+                    </div>
+                </div> 
+            </body> 
+        </apex:form>
+    </html>
+    
+</apex:page>

@@ -1,0 +1,4 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="Generate_Invoice_Project_Controller">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <h1 class="slds-align_absolute-center" style="margin:2%">Generating Invoice !</h1>
+</aura:component>

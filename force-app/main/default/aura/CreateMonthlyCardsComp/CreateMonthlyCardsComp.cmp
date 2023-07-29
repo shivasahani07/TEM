@@ -1,0 +1,208 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="MonthlyLineItemsCreation">
+    
+    <!--Basic types-->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="PRMlist" type="Project_Resource_Mapping__c[]"/>
+    <aura:attribute name="totalrec" type="integer"/>
+    <aura:attribute name="mappingDetails" type="sobject"/>
+    <aura:attribute name="isDisbaled" type="boolean" default="true"/>
+    <aura:attribute name="currentDate" type="date" />
+    <aura:attribute name="currentDay" type="String" />
+    <aura:attribute name="currentTime" type="String" />
+    <aura:attribute name="dynamicButtonName" type="string" />
+    <aura:attribute name="isModalOpen" type="Boolean" default="true"/>
+    <aura:attribute name="isModalOpenSecond" type="Boolean" default="false"/>
+    
+    
+    
+    
+    
+    <aura:if isTrue="{!v.isModalOpen}">
+        
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <ui:message title="Card Management on a Monthly Basis" severity="warning" closable="true">
+                       Before proceeding, please ensure that the "Weekly Card checkbox" is updated.
+                    </ui:message>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div style = "border-style: solid;margin :1%">
+                        <div style = "margin :1%;  text-align: center;">
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_3-of-12">
+                                    <lightning:input  type="date" aura:id="startdatetime" name="Today's Date" hour12="true"  disabled="true" value="{!v.currentDate}" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-12">
+                                </div>
+                                <div class="slds-col slds-size_3-of-12">
+                                    <lightning:input  type="text" aura:id="startdatetime" name="Today's Days" hour12="true"  disabled="true" value="{!v.currentDay}" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-12">
+                                </div>
+                                <div class="slds-col slds-size_4-of-12">
+                                    <lightning:input  type="text" aura:id="startdatetime" name="Today's Time" hour12="true"  disabled="true" value="{!v.currentTime}" />
+                                </div>
+                                
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <!--Modal/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Update Mapping Boolean" variant="Brand" onclick="{!c.updatePRMData}"/>
+                    <lightning:button label="{!v.dynamicButtonName}" variant="Brand" disabled="{!v.isDisbaled}" onclick="{!c.runBtach}"/>
+                    <lightning:button label="CANCEL" variant="Neutral" onclick="{!c.getListWithoutCards}" />
+                    
+                    
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <div>
+        <!-- Modal/Popup Box Sceond to Show Now of Wihtour Card Records-->
+        <aura:if isTrue="{!v.isModalOpenSecond}">
+            
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-2" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Total PRM Cards Not Created</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                        <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                            <div class="slds-m-around--xxx-large">               
+                                
+                                <lightning:card>
+                                    <aura:set attribute="title">
+                                        Account
+                                    </aura:set>
+                                    <aura:set attribute="footer">
+                                        <div class="slds-align_absolute-center"> 
+                                            <div class="slds-p-right_xx-small">
+                                                <lightning:button label="Prev"
+                                                                  onclick="{!c.handlePrev}"
+                                                                  disabled="{! v.pageNumber == 1}"
+                                                                  variant="brand"
+                                                                  iconName="utility:back"
+                                                                  name="prev"/>
+                                            </div>
+                                            <span class="slds-badge slds-badge_lightest">
+                                                Page {!v.pageNumber} | Showing records from {! ((v.pageNumber-1)*v.pageSize)+' to '+((v.pageNumber-1)*v.pageSize+v.dataSize)}
+                                            </span>
+                                            <div class="slds-p-left_xx-small">
+                                                <lightning:button label="Next"
+                                                                  disabled="{!v.isLastPage}"
+                                                                  onclick="{!c.handleNext}"
+                                                                  variant="brand"
+                                                                  iconName="utility:forward"
+                                                                  iconPosition="right"
+                                                                  name="next"/>
+                                            </div>
+                                        </div>  
+                                        
+                                    </aura:set>
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                        <thead>
+                                            <tr class="slds-line-height_reset slds-text-title_caps">
+                                                <th  class="slds-is-resizable" scope="col">
+                                                    <div class="slds-truncate" title="Name">
+                                                        Name
+                                                    </div>
+                                                </th>
+                                                <th  class="slds-is-resizable" scope="col">
+                                                    <div class="slds-truncate" title="Team Member">
+                                                        Team Member
+                                                    </div>
+                                                </th>
+                                                <th class="slds-is-resizable" scope="col">
+                                                    <div class="slds-truncate" title="Role">
+                                                        Role
+                                                    </div>
+                                                </th>
+                                                <th class="slds-is-resizable" scope="col">
+                                                    <div class="slds-truncate" title="Project">
+                                                        Project
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Actions">Actions</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <aura:if isTrue="{!v.PRMlist.length > 0}">
+                                            <tbody>
+                                                <aura:iteration items="{!v.PRMlist}" var="acc">
+                                                    <tr class="slds-hint-parent">
+                                                        
+                                                        <th data-label="Name" scope="row">
+                                                            <div class="slds-truncate" title="{!acc.Name}">
+                                                                {!acc.Name}
+                                                            </div>
+                                                        </th>
+                                                        <td data-label="Account Number">
+                                                            <div class="slds-truncate" title="{!acc.Team_Member_Name__c}">{!acc.Team_Member_Name__c}</div>
+                                                        </td>
+                                                        <td data-label="Industry">
+                                                            <div class="slds-truncate" title="{!acc.Type__c}">{!acc.Type__c}</div>
+                                                        </td>
+                                                        <td data-label="Phone">
+                                                            <div class="slds-truncate" title="{!acc.Project_Name__c}">{!acc.Project_Name__c}</div>
+                                                        </td>
+                                                        
+                                                        <td data-label="Phone">
+                                                            <div class="slds-truncate" title="{!acc.Card_Created__c}">{!acc.Card_Created__c}</div>
+                                                        </td>
+                                                        <td data-label="Action">
+                                                            <lightning:buttonIcon name="{!acc.Id}" iconName="utility:delete" title="Delete" variant="bare" onclick="{!c.handleDeleteAccount}" alternativeText="Delete" />                                                                            
+                                                        </td>
+                                                        
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </aura:if>
+                                    </table>
+                                    <aura:if isTrue="{!empty(v.PRMlist)}">
+                                        <div class="slds-align_absolute-center">
+                                            No records found
+                                        </div>
+                                    </aura:if>
+                                </lightning:card>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModelSecond }"/>
+                        <lightning:button variant="brand"
+                                          label="OK"
+                                          title="OK"
+                                          onclick="{!c.submitDetails}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        
+    </div>
+    
+</aura:component>

@@ -1,0 +1,142 @@
+<aura:component implements="flexipage:availableForRecordHome,lightning:isUrlAddressable,force:lightningQuickAction,force:hasRecordId,lightning:actionOverride" access="global" controller="EventSchedularHelper">
+    
+    <aura:attribute name="displayMeetingSchedularChild" type="boolean"/>
+    <aura:attribute name="displayMeetingSchedular" type="boolean" default="true"/>
+    <aura:attribute name="displayMeetingDetails" type="boolean" default="false"/>
+    <aura:attribute name="showSlots" default="false" type="Boolean" />
+    <aura:attribute name="Warning" type="boolean" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="PassDate" type="Date" />
+    <aura:attribute name="emailOfAnotherUser" type="String" />
+    <aura:attribute name="Hostname" type="String" default="Shubham Kumar"/>
+    <aura:attribute name="HostCut" type="String" default="Shubham Kumar"/>
+    <aura:attribute name="HostEmail" type="String" default="Shubham Kumar"/>
+    <aura:attribute name="SelSlot" type="String" />
+    <aura:attribute name="SelSlotDuration" type="String" default="12:00-01:00"/>
+    <aura:attribute name="Description" type="String" />
+    <aura:attribute name="wrapperList" type="object"/>
+    <aura:attribute name="SelDay" type="String" default="60 min"/>
+    <aura:attribute name="MyNotes" type="String" />
+    <aura:attribute name="SelStartDate" type="String" />
+    <aura:attribute name="SelEndDate" type="String" />
+    <aura:attribute name="CurrentMonth" type="String"/>
+    <aura:attribute name="myMap" type="List" />
+    <aura:attribute name="availableSlots" type="List" />
+    <aura:attribute name="Days" type="String[]"/>
+    <aura:attribute name="PsyId" type="String" />
+    <aura:attribute name="pageUrl" type="String" />
+    <aura:attribute name="checkSpinner" type="boolean" default="false"/>
+    <aura:handler name="sampleComponentEvent" event="c:compEvent" action="{!c.getSlots}"/>
+    <aura:attribute name="selectedLookUpRecords" type="sObject[]" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"></aura:handler>
+    <aura:if isTrue="{!v.displayMeetingSchedular}">
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        <b style="font-family: Georgia, serif; color: grey;font-size: 20px;margin-right:5%;">
+                            Schedule You Meetings
+                        </b>
+                    </h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    
+                    <div >
+                        <div class="slds-box" style="font-family: Georgia, serif; color: grey;font-size: 20px;outline: 2px solid #11a3db;">
+                            <b style="font-size: 15px;">
+                                HOST
+                                <br/>
+                                <span class="slds-avatar">
+                                    <abbr class="slds-avatar__initials slds-icon-standard-account" title="Company name"><b style="font-size: 15px">{!v.HostCut}</b></abbr>
+                                </span>
+                                <br/>
+                                {!v.Hostname}
+                                <br/>
+                                {!v.HostEmail}
+                                <br/>
+                                
+                                Agenda For the Meeting :
+                                <lightning:Textarea value="{!v.Description}" style="font-family: Georgia, serif; color: #11a3db;" placeholder="Type something interesting"/>
+                                <br/>
+                                
+                                Time Selection <br/>
+                                
+                                <lightning:input type="datetime" name="Start Time" label="Start Time" value="{!v.SelStartDate}"/>
+                                
+                                <lightning:input type="datetime" name="End Time" label="End Time" value="{!v.SelEndDate}"/>
+                                
+                                <!--b style="font-family: Georgia, serif; color: #11a3db;">
+                            {!v.SelDay},{!v.SelDate}
+                            <br/>
+                            {!v.SelSlotDuration}
+                        </b-->
+                                <br/><br/>
+                                
+                                <c:reUsableMultiSelectLookup objectAPIName="contact"
+                                                             IconName="standard:contact"
+                                                             lstSelectedRecords="{!v.selectedLookUpRecords}"
+                                                             label="Contact Name"/>
+                                
+                                <!--lightning:input name="Email" style="font-family: Georgia, serif; color: #11a3db;" label="Enter Email Of Attendee" value="{!v.emailOfAnotherUser}"/-->
+                            </b>
+                            
+                            <div >
+                                <!--img style="" src="{!$Resource.Outook}"/-->
+                                <br/>
+                                <div class="slds-grid slds-gutters">
+                                    
+                                    <div class="slds-col slds-size_1-of-5">
+                                        <!--span>
+                                                <lightning:button variant="brand" onclick="{!c.scheduleMeeting}" label="Teams Meeting"></lightning:button>
+                                            </span-->
+                                    </div>
+                                    
+                                    <div class="slds-col slds-size_1.5-of-5">
+                                        <span>
+                                            <lightning:button variant="brand" onclick="{!c.scheduleTeamsMeeting}" label="Teams Meeting"></lightning:button>
+                                        </span>
+                                    </div>
+                                    <div class="slds-col slds-size_1.5-of-5">
+                                        <span>
+                                            <lightning:button variant="brand" onclick="{!c.scheduleZoomMeeting}" label="Zoom Meeting"></lightning:button>
+                                        </span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5">
+                                        <!--span>
+                                                <lightning:button variant="brand" onclick="{!c.scheduleMeeting}" label="Teams Meeting"></lightning:button>
+                                            </span-->
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+                <!--Modal/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{! c.closeModel }"/>
+                    <!--lightning:button variant="brand"
+                                          label="OK"
+                                          title="OK"
+                                          onclick="{!c.submitDetails}"/-->
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

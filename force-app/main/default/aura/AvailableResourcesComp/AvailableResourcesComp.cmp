@@ -1,0 +1,140 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="getAvailableResourcesCompController" >
+    <aura:attribute name="jiraTaskByConmap" type="Map"/>
+    <aura:attribute name="conId" type="String"/>
+    <aura:attribute name="customers" type="string[]" />
+    <aura:attribute name="prmList" type="string[]" />
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="mainModal" type="boolean" default="false"/>
+    <aura:attribute name="isNotFoundPrm" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    
+    <div class="slds-m-around_xx-large">
+        
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeMainModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.label}</h2>
+                </header>
+                
+                <table class="slds-table slds-table_bordered slds-table_striped 
+                              slds-table_fixed-layout records-table" style="border: 1px solid rgb(217, 219, 221);"> 
+                    <thead> 
+                        <tr class="slds-text-title_caps"> 
+                            
+                            <th scope="col"><span class="slds-truncate">Name</span></th>
+                            <th scope="col"><span class="slds-truncate">Project Details</span></th>
+                            
+                            
+                        </tr> 
+                    </thead> 
+                    
+                    <tbody>
+                        <aura:iteration items="{!v.customers}" var="item">
+                            <tr id="{!item.Id}">
+                                <td class="slds-truncate"> 
+                                    <lightning:buttonIcon iconName="utility:people"  alternativeText="Settings" title="Settings" />
+                                    <lightning:badge label="{!item.Name}"/>
+                                    
+                                </td>
+                                <td>
+                                    <div data-id="{!item.Id}" onclick="{! c.handleClick }">
+                                        <lightning:button variant="brand"  aura:id="{!item.Id}" label="Detalis" title="Brand action"  />
+                                    </div>
+                                    
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table> 
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{! c.closeModel }"/>
+                    
+                </footer>
+            </div>
+        </section>
+        
+        <aura:if isTrue="{!v.isModalOpen}">
+            
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open"  >
+                <div class="slds-modal__container" >
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header" style = "border-style: solid;">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Project Details</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style = "border-style: solid;">
+                        <aura:if isTrue="{!v.prmList.length > 0}">
+                            <table class="slds-table slds-table_bordered slds-table_striped 
+                                          slds-table_fixed-layout records-table" style="border: 1px solid rgb(217, 219, 221);"> 
+                                <thead> 
+                                    <tr class="slds-text-title_caps"> 
+                                        
+                                        <th> 
+                                            <div class="slds-truncate">Project Name</div> 
+                                        </th> 
+                                        <th> 
+                                            <div class="slds-truncate">Role</div> 
+                                        </th> 
+                                    </tr> 
+                                </thead> 
+                                <tbody> 
+                                    
+                                    
+                                    
+                                    <aura:iteration items="{!v.prmList}" var="item">
+                                        <tr id="{!item.Id}">
+                                            <td>
+                                                <lightning:buttonIcon iconName="utility:tax_policy"  alternativeText="Settings" title="Settings" />
+                                                <lightning:badge label="{!item.Project__r.Name}"/>
+                                                
+                                            </td>
+                                            <td>
+                                                {!item.Type__c}
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                    
+                                </tbody>
+                                
+                            </table> 
+                            <aura:set attribute="else">
+                                They are currently not involved in any project!!
+                            </aura:set>
+                            
+                        </aura:if>
+                        
+                    </div>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                        
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

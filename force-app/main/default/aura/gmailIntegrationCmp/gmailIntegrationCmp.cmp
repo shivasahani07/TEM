@@ -1,0 +1,11 @@
+<aura:component controller="gmailIntegrationController" implements="lightning:isUrlAddressable,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+  	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="accessToken" type="String" />
+    <aura:attribute name="access" type="String" />
+    <lightning:card title="Gmail">
+    	<lightning:button variant="brand" label="Authorize Gmail" title="Authorize Gmail" onclick="{! c.doAuth }" />
+        <p>
+            {!access}
+        </p>
+   	</lightning:card>
+</aura:component>

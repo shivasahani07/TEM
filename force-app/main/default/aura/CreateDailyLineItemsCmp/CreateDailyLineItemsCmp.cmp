@@ -1,0 +1,134 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller = "CreateDailyLineItemsController">
+    <aura:attribute name="displayDailyLineItems" type="boolean" default="false" />
+    <aura:attribute name="checkSpinner" type="boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="lineiItemsList" type="Time_Entry_Line_Items__c[]" />
+    <aura:attribute name="currentDate" type="date" />
+    <aura:attribute name="recordId" type="Id" />
+    
+    
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+        <aura:if isTrue="{!v.checkSpinner}">
+            <div class="exampleHolder">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </div>
+        </aura:if>
+        
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close"
+                                      onclick="{! c.closeModel }"
+                                      alternativeText="close"
+                                      variant="bare-inverse"
+                                      class="slds-modal__close"/>
+                <div class="modal-header slds-modal__header slds-size_1-of-1">
+                    <h4 class="title slds-text-heading--medium"><b>Update Today Time Line Items</b></h4>
+                </div>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-m-around_x-small slds-modal_large slds-scrollable_x" style="z-index: 1; padding-bottom: 150px;">
+                    
+                    <div class="container-fluid">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example table of Opportunities with vertical borders">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="S No.">Serial No.</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="S No.">Select Date</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Task Name">Task Name</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Project Name">Project Name</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Task Description">Task Description</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Consumed Hours">Consumed Hours</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Allocated Hours">Allocated Hours</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Is Completed?">Is Completed?</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.lineiItemsList}" var="item" indexVar="index" >
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="S.No">
+                                            <div class="slds-truncate" title="">       
+                                                <lightning:input type="string" name="input1" label="" value="{!index + 1}" disabled="true"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="S.No">
+                                            <div class="slds-truncate" title="">       
+                                                <lightning:input type="date" name="input1" label="Enter a date" value="{!item.Date_Of_Work__c}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="Task Name">
+                                            <div class="slds-truncate" title="">       
+                                                <lightning:input type="string" name="input1" label="" value="{!item.Name}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="Project Name">
+                                            
+                                            <aura:if isTrue="{!item.Project_Resource_Mapping__r.Project__r.Name == undefined}">
+                                                <br/>
+                                                <c:customLookupForDailyLineItems sObject="Project_Resource_Mapping__c" recordId="{!v.recordId}" methodName="c.searchProjects" PRMId="{!item.Project_Resource_Mapping__c}" isPRM="true"/>
+                                                <aura:set attribute="else">
+                                                    <br/>
+                                                    <lightning:textarea type="string" name="input1" label="" value="{!item.Project_Resource_Mapping__r.Project__r.Name}" disabled="true"/>
+                                                </aura:set>
+                                            </aura:if> 
+                                            
+                                        </td>   
+                                        <td data-label="Task Description">
+                                            <br/>
+                                            <div class="slds-truncate" title="">
+                                                <lightning:textarea name="input7" required="true" value="{!item.Task_Description__c}" placeholder="Enter the Task Description" label="" />
+                                            </div>
+                                        </td> 
+                                        <td data-label="Consumed Hours">
+                                            <div class="slds-truncate" title="">
+                                                <lightning:input type="number" name="input6" label="" value="{!item.Consumed_Hours__c}"/>                              
+                                            </div>
+                                        </td>   
+                                        <td data-label="Allocated Hours">
+                                            <div class="slds-truncate" title="">
+                                                <lightning:input type="number" name="input1" label="" value="{!item.Allocated_Hours__c}" />
+                                            </div>
+                                        </td> 
+                                        <td data-label="Is Completed?">
+                                            <div class="slds-truncate" title="" style="margin-top: 15%;">
+                                                <ui:inputCheckbox aura:id="checkbox" label="" value="{!item.Is_Completed__c}"/>
+                                            </div>
+                                        </td> 
+                                    </tr>
+                                    
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <div class="modal-footer slds-modal__footer slds-size_1-of-1 slds-p-around_large slds-align_absolute-center">
+                    <div role="contentinfo">
+                        <lightning:button label="Save" title="Save" onclick="{!c.SaveDailyLineItemsDetails}" class="marginTop"/>
+                        <lightning:button label="Add Row" title="Add Row" onclick="{!c.addRow}" class="marginTop"/>
+                        <lightning:button label="Remove Row" title="Remove Row" onclick="{!c.removeRow}" class="marginTop"/>
+                        <lightning:button label="Cancel" title="Cancel" onclick="{! c.closeModel }" class="marginTop"/>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    
+</aura:component>

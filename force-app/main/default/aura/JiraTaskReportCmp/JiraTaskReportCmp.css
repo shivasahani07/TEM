@@ -1,0 +1,17 @@
+.THIS .toggle{
+    display: none;
+}
+
+.THIS .popover {
+    position: absolute;
+    left: 50%;
+    bottom: 35%;
+}
+
+.THIS .slds-popover__body {
+    position:relative;
+    }
+
+.THIS.textClass{
+    color: grey;
+}

@@ -1,0 +1,127 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="AddModuleButtonHelper" >
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="values" type="List" default="[]"/>
+    <aura:attribute name="selectedValue" type="List" default="[]"/>
+    <aura:attribute name="min" type="Integer" default="1"/>
+    <aura:attribute name="max" type="Integer" default="3"/>
+    <aura:attribute name="options" type="List" default="[]"/>
+    <aura:attribute name="preDefinedmodules" type="List" default="[]" />
+    <aura:attribute name="selectedmodules" type="List" default="[]" />
+    <aura:attribute name="showAddModule" type="Boolean" default="false"/>
+    <aura:attribute name="moduleList" type="Module__c[]" default="[]"/>
+    <aura:attribute name="recordId" type="Id" default="a1L6D00000AMYbXUAX"/>
+    
+    <!--<aura:attribute name="values" type="List" default="[]"/>-->
+    
+    <aura:html tag="style">
+        .slds-modal__container { 
+        width : 80% !important; max-width : 100% !important; 
+        }
+        .slds-p-around–medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+    </aura:html>
+    
+    <div style="margin:2%">
+        <lightning:dualListbox name="multipleOptions" 
+                               label= "Availiable Module" 
+                               sourceLabel="Available" 
+                               selectedLabel="Selected" 
+                               options="{!v.preDefinedmodules}" 
+                               value="{!v.selectedValue}" 
+                               onchange="{!c.handleChange }"/>
+        
+        <div class="slds-float_right">
+            <div class="slds-align_absolute-center slds-p-top_small">
+                <lightning:button variant="brand" label="Add Modules" title="Brand action" onclick="{!c.showModuleComp}" /> 
+            </div>        
+        </div>
+        <br/>
+    </div>
+    
+    <aura:if isTrue="{!v.showAddModule}">
+        <lightning:card title="Manage Modules for This Project!!">
+            <div style="margin:2%">
+                <div class="slds-float_right slds-p-bottom_small">
+                    <h1 class="slds-page-header__title">Add Row 
+                        <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.addRow}"/>
+                    </h1>
+                </div>
+                <div class="container-fluid">        
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate">Sr. No</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module Name">Module Name</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module Description">Module Description</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Total Estimated Efforts">Total Estimated Efforts</div>
+                                </th>
+                                <!-- <th scope="col">
+                                    <div class="slds-truncate" title="Module Start Date">Module Start Date</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module End Date">Module End Date</div>
+                                </th> --> 
+                                
+                            </tr>
+                        </thead>   
+                        <tbody>      
+                            <aura:iteration items="{!v.moduleList}" var="mdl" indexVar="index">
+                                <tr>
+                                    <td> 
+                                        {!index + 1}
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlName" type="text" maxlength="50" value="{!mdl.Name}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlDescription" type="text" value="{!mdl.Module_Description__c}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdl" type="text" value="{!mdl.Actual_Estimated_Efforts__c}" />
+                                    </td>
+                                    <!-- <td>
+                                        <lightning:input name="mdlDescription" type="Date" value="{!mdl.Module_Start_Date__c}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdl" type="Date" value="{!mdl.Module_End_Time__c}" />
+                                    </td> -->
+                                    
+                                    <td>
+                                        <a onclick="{!c.removeRecord}" data-record="{!index}">
+                                            <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                            <span class="slds-assistive-text">Delete</span>
+                                        </a>
+                                    </td> 
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <div class="slds-align_absolute-center slds-p-top_small">
+                        <lightning:button variant="brand" label="Submit" title="Brand action" onclick="{!c.saveModule}" />
+                    </div>
+                </div>
+            </div>
+        </lightning:card>
+    </aura:if>
+    
+
+    
+</aura:component>

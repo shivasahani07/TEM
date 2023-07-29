@@ -1,0 +1,106 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" 
+                access="global" controller="JiraTaskManagerViewHelper">
+    <aura:attribute name="ProjectId" type="string" default="" />
+    <aura:attribute name="recordId" type="string" default="" />
+    <aura:attribute name="ProjectLeadId" type="string" default=""/>
+    <aura:attribute name="TeamMateId" type="string" default=""/>
+    <aura:attribute name="StartDate" type="date" default=""/>
+    <aura:attribute name="EndDate" type="date" default=""/>
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="showRefreshedData" type="boolean" default="false"/>
+    <aura:attribute name="handlePrevious" type="boolean" default="false"/>
+    <aura:attribute name="pageLoadData" type="boolean" default="false"/>
+    <aura:attribute name="filledDescription" type="string" default=""/>
+    <aura:attribute name="DesignDescription" type="string" default=""/>
+    <aura:attribute name="pageNumber" type="Integer" default="1"/>
+    <aura:attribute name="pageSize" type="Integer" default="15"/>
+    <aura:attribute name="isLastPage" type="Boolean" default="false"/>
+    <aura:attribute name="dataSize" type="Integer" default="0"/> 
+    <aura:attribute name="sortBy" type="String"/>
+    <aura:attribute name="sortDirection" type="String" />
+    <!-- ######################### attributes for custom data table ######################## -->
+    <aura:attribute name="data" type="Map"/>
+    <aura:attribute name="filteredData" type="Map"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="ProjectTaskListWrapper" type="List" default=""/>
+    <aura:attribute name="draftValues" type="Jira_Task__c[]" default="[]"/>
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+
+    
+    <lightning:card title="Available Tasks">
+        <div class="c-container" style = "border-style: solid">
+            <lightning:layout >
+                <lightning:layoutItem padding="around-small" size="2">
+                    <div class="header-column">
+                        <c:JiraTaskManagerView value="{!v.ProjectId}" objectName="Project__c" fieldName="Name" label="Project Name" contactType="" iconName="standard:opportunity" placeholder="Enter Value" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                    <div class="header-column">
+                        <c:JiraTaskManagerView value="{!v.ProjectLeadId}" objectName="Contact" fieldName="Name" label="Assigned By" contactType="teamLead" iconName="standard:employee" placeholder="Enter Value" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                    <div class="header-column">
+                        <c:JiraTaskManagerView value="{!v.TeamMateId}" objectName="Contact" fieldName="Name" label="Assigned To" contactType="resources" iconName="standard:employee" placeholder="Enter Value" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                    <div class="header-column">
+                        <lightning:input type="date" name="input1" label="Start Date" value="{!v.StartDate}"/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                    <div class="header-column">
+                        <lightning:input type="date" name="input2" label="End Date" value="{!v.EndDate}" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="2">
+                    <div class="header-column buttontopalign" >
+                        <lightning:button variant="success" label="Search" onclick="{!c.handleMainData }" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+    </lightning:card>
+    
+    <div class="slds-m-around_xx-large" style = "border-style: solid;">
+        <aura:if isTrue="{!v.showRefreshedData}">
+            <lightning:datatable
+                                 keyField="Id"
+                                 data="{! v.data }"
+                                 columns="{! v.columns }"
+                                 hideCheckboxColumn="true"
+                                 onrowaction="{!c.viewRecord}"
+                                 sortedBy="{!v.sortBy}"
+                                 sortedDirection="{!v.sortDirection}"
+                                 onsort="{!c.handleSort}"
+                                 editable="true"
+                                 draftValues="{!v.draftValues}"
+            					 onsave="{! c.handleSaveEdition }"
+                                 />
+            <div class="slds-clearfix">
+                <div class="slds-page-header" role="banner">
+                    <div class="slds-float_right">            
+                        <lightning:button label="Prev" iconName="utility:chevronleft" iconPosition="left"
+                                          onclick="{!c.handlePrev}" disabled="{! v.pageNumber == 1}"/>
+                        <lightning:button label="Next" iconName="utility:chevronright" iconPosition="right"
+                                          disabled="{! v.isLastPage}" onclick="{!c.handleNext}"/>
+                    </div>
+                    <p class="slds-page-header__title">Page {!v.pageNumber} | Showing records from {! ((v.pageNumber-1)*v.pageSize)+' to '+((v.pageNumber-1)*v.pageSize+v.dataSize)}</p>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <aura:if isTrue="{!empty(v.data)}">
+        <div class="slds-align_absolute-center">
+            No records found
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.isModalOpen}">
+        <c:ShowTaskDescription isModalOpen="{!v.isModalOpen}" label="{!v.label}" filledDescription="{!v.filledDescription}" DesignDescription="{!v.DesignDescription}" isEditable="true"/>
+    </aura:if> 
+    
+</aura:component>

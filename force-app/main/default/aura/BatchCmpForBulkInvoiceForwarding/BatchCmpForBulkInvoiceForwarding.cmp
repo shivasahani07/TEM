@@ -1,0 +1,10 @@
+<aura:component controller="BatchForForwardingBulkInvoiceHelper" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:handler value="{!this}" name="init" action="{!c.doInit}"/>
+    
+    <div class="slds-align_absolute-center" style="height:5rem;width:100%;">
+        <lightning:card >
+            <button class="slds-button slds-button_outline-brand" onclick="{!c.currentMonth}">Send Invoices From current Month</button>
+            <button class="slds-button slds-button_outline-brand" onclick="{!c.previousMonth}">Send Invoices From Previous Month</button>
+        </lightning:card>
+    </div>
+</aura:component>

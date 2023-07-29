@@ -1,0 +1,84 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" controller="ProjectList" >
+    <aura:attribute Name="AllProject" Type="list"/>
+    <aura:attribute Name="AllTeamLead" Type="list"/>
+    <aura:attribute Name="AllRole" Type="list"/>
+    <Aura:attribute Name="AllModule" Type="list"/>
+    <!--   <Aura:attribute Name="Priority" Type="String"/>-->
+    <!--  <Aura:attribute Name="TaskDescription" Type="String"/>-->
+    <!-- <Aura:attribute Name="EstimatedEffort" Type="list"/>-->
+    <aura:attribute name="projectId" type="string" default="" />
+    <aura:attribute name="JiraTaskList" type="Jira_Task__c" default="{'sobjectType':'Jira_Task__c',
+                                                               'Description__c':'',
+                                                               'Estimated_Efforts__c':'',
+                                                               'Priority__c':'',
+                                                                            :''}"/>
+    
+    <aura:handler  name="init" value="{!this}" action="{!c.doinit}"/>
+    
+    
+      
+        <lightning:select name="AllProject" label="Project Name" >
+            <option  >---None---</option>
+            <aura:iteration items="{!v.AllProject}" var="color" indexVar="key">
+                <option text="">{!color.value}</option>
+            </aura:iteration>
+        </lightning:select> <br></br>
+        
+        <lightning:select name="Team Lead" label="Team Lead" >
+            <option  >---None---</option>
+            <aura:iteration items="{!v.AllTeamLead}" var="color" indexVar="key">
+                <option text="">{!color.value}</option>
+            </aura:iteration>
+        </lightning:select> <br></br>
+        
+        <lightning:select name="All Role" label="All Role" >
+            <option  >---None---</option>
+            <aura:iteration items="{!v.AllRole}" var="color" indexVar="key">
+                <option text="">{!color.value}</option>
+            </aura:iteration>
+            
+        </lightning:select>
+                <lightning:select name="All Module" label="Module" >
+            <option  >---None---</option>
+            <aura:iteration items="{!v.AllModule}" var="color" indexVar="key">
+                <option text="">{!color.value}</option>
+            </aura:iteration>
+        </lightning:select> 
+    
+             <lightning:card title="Create Record"> 
+
+        <lightning:input name="accNumber" label="Estimated Effort" value="{!v.JiraTaskList.Estimated_Efforts__c}" />
+        <lightning:input name="accPhone" label="Task Description" value="{!v.JiraTaskList.Description__c}" />
+        <lightning:input name="accRating" label="Priority" value="{!v.JiraTaskList.Priority__c}" />
+        <lightning:button variant="brand" label="Create Task" title="Brand action" onclick="{!c.CreateModule }"/>
+                 
+                 <div class="slds-float_left slds-m-around_small slds-icon_container slds-icon-utility-add">
+                <h1 class="slds-page-header__title">
+               <lightning:button variant="brand" label="Add Row" iconPosition="center" onclick="{!c.handleAddRow}" />
+                </h1>
+            </div>
+            
+            <div class="slds-align_absolute-center slds-p-top_small slds-p-around_medium">
+                <h1 class="slds-page-header__title">
+               <lightning:button variant="brand" label="Submit" iconPosition="center" onclick="{!c.saveRecord}" />
+                </h1>
+            </div>
+    </lightning:card>
+     
+    
+    
+   
+        
+      <!-- <lightning:select aura:id="{!container.charge.Id}" value="{!container.charge.Unit_Type__c}" onchange="{!c.handleUnitTypeChange}">
+            <option text="Select" value=""/>
+            <aura:iteration items="{!v.AllModule}" var="option" indexVar="key">
+                <option text="{!option.value}" value="{!option.key}" selected="{!option.key==container.charge.Unit_Type__c}" />
+            </aura:iteration>
+        </lightning:select>-->
+    
+    
+      
+        
+ 
+                    
+</aura:component>

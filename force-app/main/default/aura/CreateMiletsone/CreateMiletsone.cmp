@@ -1,0 +1,114 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="CreateMilestoneHelper" access="global" >
+    
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:170% !important;
+        }
+        
+    </aura:html>
+    
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:attribute name="milestonesList" type="Milestone__c[]" />
+    <aura:attribute name="recordId" type="Id" />
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium"><b>Create/Edit Milestone</b></h4>
+    </div>
+    
+    <div class="slds-m-around_x-small slds-modal_large slds-scrollable_x" style="z-index: 1; padding-bottom: 150px;">
+        
+        <div class="container-fluid">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example table of Opportunities with vertical borders">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Opportunity Name">S No.</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Account Name">Milestone Name</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Close Date">Tentative Date</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Stage">Percentage Weightage (%)</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Confidence">Amount Weightage (Rs.)</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Amount">Collected</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.milestonesList}" var="milestone" indexVar="index" >
+                        <tr class="slds-hint-parent">
+                            <td data-label="Account Name">
+                                <div class="slds-truncate" title="">       
+                                    <lightning:input type="string" name="input1" label="" value="{!index + 1}" disabled="true"/>
+                                </div>
+                            </td>
+                            <td data-label="Close Date">
+                                <div class="slds-truncate" title="">
+                                    <lightning:input type="string" name="input1" label="" value="{!milestone.Name__c}"/>
+                                </div>
+                            </td>   
+                            <td data-label="Close Date">
+                                <div class="slds-truncate" title="">
+                                    <lightning:input type="date" name="input1" label="" value="{!milestone.Tentative_Date_of_Payment__c}"/>
+                                </div>
+                            </td> 
+                            <td data-label="Close Date">
+                                <div class="slds-truncate" title="">
+                                    <lightning:input type="Decimal" name="input6" label="" value="{!milestone.Milestone_Weightage__c}"/>                              
+                                </div>
+                            </td>   
+                            <td data-label="Close Date">
+                                <div class="slds-truncate" title="">
+                                    <lightning:input type="Decimal" name="input1" label="" value="{!milestone.Milestone_Weightage_Rs__c}" disabled="true"/>
+                                </div>
+                            </td> 
+                            <td data-label="Close Date">
+                                <div class="slds-truncate" title="">
+                                   <ui:inputCheckbox aura:id="checkbox" label="" value="{!milestone.Is_Collected__c}"/>
+                                </div>
+                            </td> 
+                        </tr>
+                        <!-- span>
+                            
+                            <lightning:icon iconName="action:delete" size="medium" alternativeText="Delete" style="margin-top:4.5%" title="Delete"/>
+                                <span class="slds-assistive-text">Delete</span>
+                            < <a onclick="{!c.removeRow}" data-record="{!index}" data-index="{!milestone.recordId}">
+                                
+                            </a>>
+                    </span -->
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1 slds-p-around_large slds-align_absolute-center">
+        <div role="contentinfo">
+            <lightning:button label="Save" title="Save" onclick="{!c.SaveMilestoneDetails}" class="marginTop"/>
+            <lightning:button label="Add Row" title="Add Row" onclick="{!c.addRow}" class="marginTop"/>
+            <lightning:button label="Cancel" title="Cancel" onclick="{! c.CloseQuickAction }" class="marginTop"/>
+        </div>
+    </div>
+</aura:component>

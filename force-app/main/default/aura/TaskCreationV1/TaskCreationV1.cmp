@@ -1,0 +1,55 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" controller="JiraTaskCreate" >
+    <aura:attribute name="PriorityMap" type="Map"/>
+    <aura:attribute name="JiraTaskDisplay" type="Jira_Task__c[]"/>
+    <aura:attribute name="myMod" type="string"/>
+     <aura:handler name="init" value="{! this }" action="{!c.showJiraTask}"/>
+    
+    <aura:attribute name="JiraTaskList" type="Jira_Task__c" default="{'sobjectType':'Jira_Task__c',
+                                                                     'Description__c':'',
+                                                                     'Estimated_Efforts__c':'',
+                                                                     'Priority__c':'',
+                                                                     'Module__c':'',
+                                                                     }"/>
+    <lightning:card title="Create Record"> 
+        <lightning:input name="description" label="Task Description " value="{!v.JiraTaskList.Description__c}" />
+        <lightning:input name="estimateEff" label="Estimsted Effort" value="{!v.JiraTaskList.Estimated_Efforts__c}" />
+        <lightning:inputField fieldName= "Module__c" value="{!v.myMod}"/>
+        
+        <lightning:select aura:id="priorityPicklist" value="{!v.JiraTaskList.Priority__c}" onchange="{!c.handleCompanyOnChange}" name="priorityPicklist" label="Priority" >
+                    <option value="">--None--</option>
+                    <aura:iteration items="{!v.PriorityMap}" var="ind" indexVar="key">
+                        <option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.JiraTaskList.Priority__c}" />
+                    </aura:iteration>
+                </lightning:select>
+        <!--   <aura:iteration items="{!v.JiraTaskList}" var="jira" indexVar="key"> 
+         
+     <lightning:input value="{!jira.Module__c}" objectName="Module__c" fieldName="Name" iconName="standard:contact" placeholder="Enter Value" />
+            
+              </aura:iteration>-->
+        <lightning:button variant="brand" label="Create Jira Task" title="Brand action" onclick="{!c.CreateJiraTask }"/>
+    </lightning:card>
+    <lightning:card title ="Display Record"> 
+        <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+            <thead>
+                <tr >
+                    <th>Description </th>
+                    <th>Estimeted Effort</th>
+                    <th>Priority</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <!--this is iteration i.e works as for/for-each -->
+                <aura:iteration items="{!v.JiraTaskDisplay}" var="Jt">
+                    <tr>
+                        <td>{!Jt.Description__c}</td>
+                        <td>{!Jt.Estimated_Efforts__c}</td>
+                        <td>{!Jt.Priority__c}</td>
+                        
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+    </lightning:card>
+    
+</aura:component>

@@ -1,0 +1,123 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="ProjectDashbordHelper" >
+    <aura:attribute name="activeProjList" type="Project__c[]" default="[]"/>
+    <aura:attribute name="inActiveProjList" type="Project__c[]" default="[]"/>
+    
+    
+    <lightning:card footer="Card Footer" title="Hello">
+        
+        <div>
+            <lightning:button variant="destructive" label="Destructive" title="Destructive action" onclick="{! c.inActiveProj }"/>
+            
+            <lightning:button variant="success" label="Success" title="Success" onclick="{! c.activeProj }"/>
+             
+        </div> 
+        
+        <div>
+         <div style="margin:2%">
+                <div class="slds-float_right slds-p-bottom_small">
+                    <h1 class="slds-page-header__title">Add Row 
+                        <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.addRow}"/>
+                    </h1>
+                </div>
+                <div class="container-fluid">        
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate">Sr. No</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module Name">Module Name</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module Description">Module Description</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Total Estimated Efforts">Total Estimated Efforts</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module Start Date">Module Start Date</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module End Date">Module End Date</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Module End Date">Module End Date</div>
+                                </th>  
+                                
+                            </tr>
+                        </thead>   
+                        <tbody>      
+                            <aura:iteration items="{!v.inActiveProjList}" var="inproj" indexVar="index">
+                                <tr>
+                                    <td> 
+                                        {!index + 1}
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlName" type="text" maxlength="50" value="{!inproj.Name}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlDescription" type="text" value="{!inproj.Account__r.Name}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdl" type="checkbox" value="{!inproj.Active__c}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlDescription" type="Date" value="{!inproj.Project_End_Date__c}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdl" type="Date" value="{!inproj.Project_Start_Date__c}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdl" type="text" value="{!inproj.Type__c}" />
+                                    </td>
+                                    
+                                    <td>
+                                        <a onclick="{!c.removeRecord}" data-record="{!index}">
+                                            <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                            <span class="slds-assistive-text">Delete</span>
+                                        </a>
+                                    </td> 
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                         <tbody>      
+                            <aura:iteration items="{!v.activeProjList}" var="proj" indexVar="index">
+                                <tr>
+                                    <td> 
+                                        {!index + 1}
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlName" type="text" maxlength="50" value="{!proj.Name}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlDescription" type="text" value="{!proj.Account__r.Name}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdl" type="checkbox" value="{!proj.Active__c}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdlDescription" type="Date" value="{!proj.Project_End_Date__c}" />
+                                    </td>
+                                    <td>
+                                        <lightning:input name="mdl" type="Date" value="{!proj.Project_Start_Date__c}" />
+                                    </td>
+                                    <td>
+                                         <lightning:formattedText title="Billing City" value="{!proj.Account__r.Name}" />
+                                    </td>
+                                    
+                                    <td>
+                                        <a onclick="{!c.removeRecord}" data-record="{!index}">
+                                            <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                            <span class="slds-assistive-text">Delete</span>
+                                        </a>
+                                    </td> 
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>
