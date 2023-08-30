@@ -93,7 +93,7 @@
                                     </thead>
                                     
                                     <tbody>
-                                        <aura:iteration items="{!v.relatedCommentList}" var="acc">
+                                        <aura:iteration items="{!v.paginationList}" var="acc">
                                             <tr class="slds-hint-parent">
                                                 <th data-label="Name" scope="row">
                                                     <div class="slds-truncate" title="{!acc.comment}">
@@ -119,6 +119,10 @@
                                         </aura:iteration>
                                     </tbody>
                                 </table>
+                                <div class="slds-float_right slds-border_top">
+                                    <lightning:button label="Previous" disabled="{!v.start == 0}"  onclick="{!c.Previous}" />
+                                    <lightning:button label="Next" disabled="{!v.end >= v.totalSize}" onclick="{!c.Next}" />
+                                </div>
                                 <aura:set attribute="else">
                                     <p style="text-align: center;">
                                         No comments on this post yet !!

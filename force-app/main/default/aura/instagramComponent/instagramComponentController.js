@@ -3,6 +3,7 @@
         debugger;
         var recId = component.get("v.recordId");
         var action = component.get("c.getCaseDetails");
+        var pageSize=component.get("v.pageSize");
         action.setParams({
             recordId: recId
         });
@@ -10,16 +11,24 @@
             var state = response.getState();
             if (state === 'SUCCESS') {
                 var paginationList = [];
+                var temResult=[];
                 var serverresponse = response.getReturnValue();
                 component.set("v.tweetDescription",serverresponse[0].postCaption);
                 component.set("v.relatedCommentList",serverresponse);
+                temResult=serverresponse;
                 // Added for paginaition
                 component.set("v.totalSize", component.get("v.relatedCommentList").length);
                 component.set("v.start",0);
                 component.set("v.end",pageSize-1);
-                for(var i=0; i< pageSize; i++){
-                  paginationList.push(response.getReturnValue()[i]);
-                    
+                if(temResult>pageSize){
+                    for(var i=0; i< pageSize; i++){
+                        paginationList.push(temResult[i]);
+                    }
+                }
+                else{
+                    for(var i=0; i< temResult.length; i++){
+                        paginationList.push(temResult[i]);
+                    } 
                 }
                 component.set('v.paginationList', paginationList);
                 
@@ -140,13 +149,49 @@
         $A.enqueueAction(action); 
     },
     
-    Next:function(cmp,event,helper){
-      
+    Next:function(component, event, helperr){
+        debugger;
+        var oppList = component.get("v.relatedCommentList");
+        var end = component.get("v.end");
+        var start = component.get("v.start");
+        var pageSize = component.get("v.pageSize");
+        var paginationList = [];
+        var counter = 0;
+        for(var i=end+1; i<end+pageSize+1; i++){
+            if(oppList.length > end){
+                paginationList.push(oppList[i]);
+                counter ++ ; 
+            } 
+        }
+        start = start + counter;
+        end = end + counter;
+        component.set("v.start",start);
+        component.set("v.end",end);
+        component.set('v.paginationList', paginationList);
+        
     },
-    Previous:function(cmp,event,helper){
-        var next = false;
-        var prev = true;
-        var offset = cmp.get("v.offset");
-        // helper.getAccounts(cmp,next,prev,offset); 
+    Previous:function(component, event, helper){
+        debugger;
+        var oppList = component.get("v.relatedCommentList");
+        var end = component.get("v.end");
+        var start = component.get("v.start");
+        var pageSize = component.get("v.pageSize");
+        var paginationList = [];
+        var counter = 0;
+        for(var i= start-pageSize; i < start ; i++){
+            if(i > -1){
+                paginationList.push(oppList[i]);
+                counter ++;
+            }else {
+                start++;
+                }
+        }
+        start = start - counter;
+        end = end - counter;
+        component.set("v.start",start);
+        component.set("v.end",end);
+        component.set('v.paginationList', paginationList);
+
+
     },
 })
