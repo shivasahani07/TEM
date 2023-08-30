@@ -71,7 +71,7 @@
                                     <div class="slds-truncate" title="Module Description">Module Description</div>
                                 </th>
                                 <th scope="col">
-                                    <div class="slds-truncate" title="Total Estimated Efforts">Total Estimated Efforts</div>
+                                    <div class="slds-truncate" title="Total Estimated Efforts">Actual Estimated Efforts</div>
                                 </th>
                                 <!-- <th scope="col">
                                     <div class="slds-truncate" title="Module Start Date">Module Start Date</div>

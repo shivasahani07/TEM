@@ -1,4 +1,4 @@
-public class AddModuleButtonHelper {
+global  without sharing class AddModuleButtonHelper {
     @AuraEnabled
     Public Static List<DefaulModuleName__mdt> addModule(){
         List<DefaulModuleName__mdt> AutomateMpdulesList = new List<DefaulModuleName__mdt>();
@@ -48,7 +48,7 @@ public class AddModuleButtonHelper {
     
     @AuraEnabled
     Public Static List<Milestone__c> getMilesstones(string projectiD){
-        List<Milestone__c> MilestoneList=[select id,name,name__c,project__c,Closed_the_Milesstone__c,Actual_End_Date__c,Actual_Start_Date__c,Precentage__c,Description__c,Expected_Start_Date__c,Expected_End_Date__c,Account__c from Milestone__c  where project__c =:projectiD];
+        List<Milestone__c> MilestoneList=[select id,name,name__c,project__c,project__r.name,Closed_the_Milesstone__c,Actual_End_Date__c,Actual_Start_Date__c,Precentage__c,Description__c,Expected_Start_Date__c,Expected_End_Date__c,Account__c from Milestone__c  where project__c =:projectiD];
         return MilestoneList;
     }
     @AuraEnabled
@@ -93,36 +93,34 @@ public class AddModuleButtonHelper {
         
         return 'Success';
     }
-     @AuraEnabled
+    @AuraEnabled
     Public Static void UpdateModules(String Moduleid){
         Module__c Record =[select id,name from Module__c where id =:Moduleid];
         Delete Record;
     }
-     @AuraEnabled
+    @AuraEnabled
     Public Static void UpdateModuless(String Moduleid){
         Module__c Record =[select id,name,Is_Completed__c from Module__c where id =:Moduleid];
-            if(Record.Is_Completed__c==false){
-                Record.Is_Completed__c=True;
-            }else if(Record.Is_Completed__c==true){
-                Record.Is_Completed__c=false;
-            }
-            
-            update Record;
+        if(Record.Is_Completed__c==false){
+            Record.Is_Completed__c=True;
+        }else if(Record.Is_Completed__c==true){
+            Record.Is_Completed__c=false;
+        }
+        
+        update Record;
     }
     
-     @AuraEnabled
+    @AuraEnabled
     Public Static void saveChangesRecordd(List<Module__c> ModuleList){
         system.debug('ModuleList::'+ModuleList);
         upsert ModuleList;
     }
     
-    // qouery all project list for new custom lookup
-    // 
-       @AuraEnabled
+    @AuraEnabled
     Public Static list<Project__c> getAllprojects(){
         list<Project__c> projects =[select id,name From Project__c ];
         return projects;
     }
     
-   
+    
 }

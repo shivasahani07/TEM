@@ -174,12 +174,6 @@
                         </div>
                         <div class="slds-col"></div>
                       </div>
-                      <template if:true={showTimeBreakComp}>
-                        <c-break-times sel-jira-id={selJiraTaskId} is-show-timew-comp={showTimeBreakComp} onbreakvaluechanged={handleBreakValueChanged} ref="childCmp"></c-break-times>
-                      </template>
-                    
-                     
-
 
                       <!-- <div class="slds-m-top_small slds-m-bottom_medium">
                         <div class="slds-align_absolute-center">
@@ -196,15 +190,6 @@
                             <lightning-button disabled={selectedJiraTask.disableAskForExtension} variant="brand" label="Extend Task" title="Extend Task" onclick={askExtensionBtnClicked} class="slds-m-left_x-small"></lightning-button>
                             <lightning-button disabled={selectedJiraTask.disableManualTimeEntry} variant="brand" label="Manual Entry" title="Manual Entry" onclick={manualTimeBtnClicked} class="slds-m-left_x-small"></lightning-button>
                         </div>
-                          <div style="margin-bottom:2rem">
-                            <template if:true={showTaskTestingflow}>
-                           <lightning-input-rich-text value={testingFloww} onchange={handleTestingFlow}> </lightning-input-rich-text>
-                           <br>
-                                <lightning-button label="Procced" title="Close" variant="brand" onclick={closedshowTaskTestingflow} style="margin-left:80%"></lightning-button>
-                                <br>
-                            </template>
-                          </div>
-
                         <div>
                             <div class="slds-card listViewData" style="border-style: solid;border-color: rgb(129, 129, 129);border-width: 1px;padding: 10px;">
                                 <!-- <template if:true={task.Module__c}> -->

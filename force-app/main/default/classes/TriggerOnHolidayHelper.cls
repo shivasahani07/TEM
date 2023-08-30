@@ -30,13 +30,13 @@ public class TriggerOnHolidayHelper {
             Integer totalNumberOfTakenHolidays = con.Holidays__r.size();
             contactHolidaysCount.put(con.Id, totalNumberOfTakenHolidays);
             system.debug('contactHolidaysCount'+contactHolidaysCount);
-			 
-
+            
+            
             for (Holidays__mdt hmdt : holi) {
                 system.debug('hmdt'+hmdt);
                 System.debug('hmdt.MasterLabel'+hmdt.MasterLabel);
                 if (hmdt.MasterLabel == 'Sick Leave') {
-                     system.debug('Inside Sick leave');
+                    system.debug('Inside Sick leave');
                     if(hmdt.Max_Allowed__c <totalNumberOfTakenHolidays){
                         newHolidays[0].addError('You hVE leardy taken 👍👍👍!');
                     }
@@ -45,4 +45,28 @@ public class TriggerOnHolidayHelper {
             }
         }
     }
+    
+    //create bydefualt some hoidays whenever new contact will be created shall addthis from custom setting..? bhaiya
+    Public Static void CommonHolidays(List<Contact> newContacts){
+        system.debug('newContacts--'+newContacts);
+        list<Holiday__c> commonHilidaysLIst= new list<Holiday__c>();
+        List<Default_Holidays__mdt	> holidays = [SELECT Id, DeveloperName, MasterLabel,Date__c FROM Default_Holidays__mdt];
+        for(contact con:newContacts){
+            for(Default_Holidays__mdt hlmd :holidays){
+                Holiday__c holidayRec = new Holiday__c ();
+                holidayRec.Holiday_Name__c=hlmd.MasterLabel;
+                holidayRec.Start_Date__c=hlmd.Date__c;
+                holidayRec.End_Date__c=hlmd.Date__c;
+                holidayRec.Contact__c=con.Id;
+                commonHilidaysLIst.add(holidayRec);
+                
+            }
+        }  
+        
+        if(!commonHilidaysLIst.isEmpty()){
+            insert commonHilidaysLIst;
+        }
+    }
+    
+    
 }

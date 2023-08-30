@@ -1,21 +1,74 @@
 <aura:component controller = "JiraTaskReportHelper" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
     
-    <aura:attribute type="Contact[]" name= "conList"/>
+    <!-- <ltng:require styles="{!$Resource.sweetalertcss}" scripts="{!$Resource.SweetAlertJS}"/>  -->
+    
+    <!-- for using mouse onhover to show task description -->
+    <aura:attribute name="isTooltip" type="Boolean" default="false"/>
+    
+    
+    <aura:attribute type="Contact[]" name= "conList" />
     <aura:attribute name="taskValues" type= "List"/>
-    <aura:attribute name="recordId" type="String" default="0032v00003stu7WAAQ"/>
+    <aura:attribute name="recordId" type="String"/>
     <aura:handler name= "init" value="{!this}" action="{!c.fetchTaskMap}"/>
     <aura:import library="lightning:alert" property="LightningAlert" />
     <aura:attribute name="showComp" type="boolean" default="true"/>
+    <aura:attribute name="ShowToolTip" type="Boolean" />
     <aura:attribute name="showTaskInfo" type="boolean" default="false"/>
-    <aura:attribute name="filledDescription" type="string" default=""/>
-    <aura:attribute name="showSpinner" type="boolean" default="false"/>
     <aura:attribute name="jiraTaskName" type="string" default=""/>
+    <aura:attribute name="filledDescription" type="string" default=""/>
+    <aura:attribute name="TaskProjectName" type="string" default=""/>
+    <aura:attribute name="TaskStatus" type="string" default=""/>
+    <aura:attribute name="ModuleName" type="string" default=""/>
+    <aura:attribute name="AssingedBy" type="string" default=""/>
+    
+    
+    
+    
+    <aura:attribute name="showSpinner" type="boolean" default="false"/>
+    
+    <aura:attribute name="Description" type= "String"/>
     
     <lightning:button onclick="{! c.refreshBoard }" label="Refresh Board..🔃🔃"/>
     
+    <aura:html tag="style">
+        .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        }
+        
+        .tooltip .tooltip-text {
+        visibility: hidden;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 5px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        transform-origin: center bottom;
+        opacity: 0;
+        transition: opacity 0.3s;
+        white-space: normal;
+        width: max-content;
+        max-width: 15rem;
+        overflow: hidden;
+        word-break: break-word;
+        }
+        .tooltip:hover .tooltip-text {
+        visibility: visible;
+        font-size: 15px;
+        opacity: 1;
+        }
+    </aura:html>
+    
+    
+    
     <aura:if isTrue="{!v.showComp}">
         <aura:if isTrue="{!not(empty(v.conList))}">
-            
             <div class="slds-box" style="background-color:#132639;zoom:80%" >
                 <aura:if isTrue="{!v.showSpinner}">
                     <div class="exampleHolder">
@@ -105,15 +158,40 @@
                                 <aura:iteration items="{!con.value}" var= "taskValues">
                                     <aura:if isTrue="{!taskValues.TaskName == ''}">
                                         <td  class="" scope="col" >
-                                            <ui:message title="{!taskValues.TaskName}" severity="confirm" />
+                                            <ui:message aura:Id="outputTextId" title="{!taskValues.TaskName}" severity="warning" />
                                         </td>
                                         <aura:set attribute="else">
-                                            <td  class="slds-col slds-size_1-of-12" scope="col" >
-                                                <a onclick = "{!c.navigatingToTask}" data-recid="{!taskValues.TaskName}" id="{!taskValues.Description}" name="{!taskValues.TaskName}">
-                                                    <ui:message title="{!taskValues.TaskName}" severity="error" />
-                                                    <!--lightning:icon iconName='utility:info' alternativeText='info' variant='success' size='small' title='info'></lightning:icon-->
-                                                </a>
-                                            </td>
+                                            <aura:if isTrue="{!taskValues.TaskStatus == 'Dev Completed'}">
+                                                <td  class="slds-col slds-size_1-of-12" scope="col" >
+                                                    <a onclick = "{!c.navigatingToTask}" data-recid="{!taskValues.TaskName}" id="{!taskValues.Description}" name="{!taskValues.TaskName}"  data-projectname="{!taskValues.TaskProjectName}" data-taskstatus="{!taskValues.TaskStatus}" data-giver="{!taskValues.AssingedBy}" data-modulename="{!taskValues.ModuleName}">
+                                                        <ui:message title="{!taskValues.TaskName}" severity="confirm" />
+                                                        <!--lightning:icon iconName='utility:info' alternativeText='info' variant='success' size='small' title='info'></lightning:icon-->
+                                                    </a>
+                                                </td>
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!taskValues.TaskStatus == 'In Progress'}">
+                                                        <td  class="slds-col slds-size_1-of-12" scope="col" >
+                                                            <a onclick = "{!c.navigatingToTask}" data-recid="{!taskValues.TaskName}" id="{!taskValues.Description}" name="{!taskValues.TaskName}"  data-projectname="{!taskValues.TaskProjectName}" data-taskstatus="{!taskValues.TaskStatus}" data-giver="{!taskValues.AssingedBy}" data-modulename="{!taskValues.ModuleName}">
+                                                                <ui:message title="{!taskValues.TaskName}" severity="info" />
+                                                                <!--lightning:icon iconName='utility:info' alternativeText='info' variant='success' size='small' title='info'></lightning:icon-->
+                                                            </a>
+                                                        </td>
+                                                        <aura:set attribute="else">
+                                                                <aura:if isTrue="{!taskValues.TaskStatus == 'New'}">
+                                                                    <td  class="slds-col slds-size_1-of-12" scope="col" >
+                                                                        <a onclick = "{!c.navigatingToTask}" data-recid="{!taskValues.TaskName}" id="{!taskValues.Description}" name="{!taskValues.TaskName}"  data-projectname="{!taskValues.TaskProjectName}" data-taskstatus="{!taskValues.TaskStatus}" data-giver="{!taskValues.AssingedBy}" data-modulename="{!taskValues.ModuleName}">
+                                                                            <ui:message title="{!taskValues.TaskName}" severity="error" />
+                                                                            <!--lightning:icon iconName='utility:info' alternativeText='info' variant='success' size='small' title='info'></lightning:icon-->
+                                                                        </a>
+                                                                    </td>
+                                                                    <aura:set attribute="else">
+                                                                    	<p>this is some error in tasy😎</p>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                    </aura:if>
+                                                </aura:set>
+                                            </aura:if>
                                         </aura:set>
                                     </aura:if>
                                 </aura:iteration>
@@ -145,9 +223,8 @@
                 </div>
             </aura:set>
             <aura:if isTrue="{!v.showTaskInfo}">
-                <c:showModuleDescription jiraTaskName = "{!v.jiraTaskName}" isModalOpen="{!v.showTaskInfo}" filledDescription="{!v.filledDescription}" isEditable="true"/>
+                <c:showModuleDescription jiraTaskName = "{!v.jiraTaskName}" isModalOpen="{!v.showTaskInfo}" filledDescription="{!v.filledDescription}" jiraTaskProjectName="{!v.TaskProjectName}" isEditable="true"  AssingedBy="{!v.AssingedBy}" ModuleName="{!v.ModuleName}"/>
             </aura:if>
         </aura:if> 
     </aura:if>
-    
 </aura:component>

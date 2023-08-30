@@ -17,7 +17,7 @@
                         component.set("v.ShowManDashboard",true);
                         component.set("v.ShowTLDashboard",true);
                         component.set("v.ShowResDashboard",true);
-                    }else if(response.getReturnValue().conDetails.Role__c == 'Developer'){
+                    }else if(response.getReturnValue().conDetails.Role__c == 'Developer' || response.getReturnValue().conDetails.Role__c == 'UI/UX Designer' ){
                         component.set("v.ShowResTasks",true);    
                         //component.set("v.ShowManDashboard",true);
                         component.set("v.ShowTLDashboard",true);
@@ -35,16 +35,6 @@
             }
         });
         $A.enqueueAction(action);
-    },
-    
-    handleSectionToggle: function (cmp, event) {
-        var openSections = event.getParam('openSections');
-        
-        if (openSections.length === 0) {
-            cmp.set('v.activeSectionsMessage', "All sections are closed");
-        } else {
-            cmp.set('v.activeSectionsMessage', "Open sections: " + openSections.join(', '));
-        }
     },
     
     showModel : function(component, event, helper){
@@ -67,25 +57,22 @@
         debugger;
         component.set("v.addMember",true);
     },
-    
-    showModuleUpdate:function(component, event, helper){
-        debugger;
-        component.set("v.isModuleUpdateOpen",true);
-    },
-    
     showHolidayss:function(component, event, helper){
         debugger;
         component.set("v.showHolidays",true);
-       
-      
+        
+        
+    },
+    showModuleUpdate:function(component, event, helper){
+        debugger;
+        component.set("v.isModuleUpdateOpen",true);
     },
     falsecalender :function(component, event, helper){
         debugger;
         let myData = event.getParam('data');
         if(myData === 'Success'){
-          component.set("v.showHolidays",false);
+            component.set("v.showHolidays",false);
         }
-       
+        
     }
-    
 })

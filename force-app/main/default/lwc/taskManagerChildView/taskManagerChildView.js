@@ -4,8 +4,7 @@ import markStatusAsComplete from "@salesforce/apex/TaskManagerChildViewLWCContro
 import sJob from "@salesforce/apex/TaskManagerChildViewLWCController.startJob";
 import endJob from "@salesforce/apex/TaskManagerChildViewLWCController.endJob";
 import manualTimeEntry from "@salesforce/apex/TaskManagerChildViewLWCController.manualTimeEntry";
-import endBreakRecord from "@salesforce/apex/TaskManagerChildViewLWCController.endBreakRecord";
-import markBreakAsStart from "@salesforce/apex/TaskManagerChildViewLWCController.createBreakRecord";
+import breakStartEnd from "@salesforce/apex/TaskManagerChildViewLWCController.breakStartEnd";
 import updateExtension from "@salesforce/apex/TaskManagerChildViewLWCController.updateExtension";
 import getFiles from "@salesforce/apex/TaskManagerChildViewLWCController.getFiles";
 import getDependencies from "@salesforce/apex/TaskManagerChildViewLWCController.getDependencies";
@@ -13,7 +12,6 @@ import createDependencies from "@salesforce/apex/TaskManagerChildViewLWCControll
 import getTeamLeads from "@salesforce/apex/TaskManagerChildViewLWCController.getTeamLeads";
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
-import BreakTimes from 'c/breakTimes';
 
 
 const fileCol = [
@@ -29,11 +27,7 @@ export default class TaskManagerChildView extends LightningElement {
     @track selectedJiraTask;
     @track timeIntervalInstance;
     @track currentTimer = '00h:00m:00s';
-    @track showTimeBreakComp=false;
-    @api selJiraTaskId = '';
-    @track breakRecId;
-    @track showTaskTestingflow= false;
-    @track testingFloww='';
+
     fileCol = fileCol;
 
 
@@ -77,11 +71,10 @@ export default class TaskManagerChildView extends LightningElement {
 
         if(result.data){
             debugger;
-            console.log(result.data);
             result.data.forEach((item,index)=>{
                 let obj = {...item};
-                obj.disableStartBreak =  obj.Status__c=='New'|| obj.Status__c=='Dev Completed'|| (obj.Is_BreakStart__c==true);
-                obj.disableEndBreak = obj.Status__c=='New'|| obj.Status__c=='Dev Completed'|| (obj.Is_BreakStart__c==false);
+                obj.disableStartBreak =  obj.Status__c=='Dev Completed' || !obj.Actual_Task_Start_Time__c || obj.Status__c=='New'
+                obj.disableEndBreak = !obj.Break_Start_Time__c || !obj.Actual_Task_Start_Time__c || (obj.Total_Break_Time__c && obj.Total_Break_Time__c>0);
                 obj.startTimeStyle = obj.Status__c == 'In Progress' ? 'success':'brand';
                 obj.disableStartTime  = obj.Actual_Task_Start_Time__c || obj.Status__c=='Dev Completed';
                 obj.endDisableStartTime = obj.Status__c=='Dev Completed' || (obj.Break_Start_Time__c && !obj.Break_End_Time__c) || obj.Actual_Task_End_Time__c!=null || !obj.Actual_Task_Start_Time__c;
@@ -137,7 +130,7 @@ export default class TaskManagerChildView extends LightningElement {
                 }else{
                     obj.selected = index==0;
                 }
-                obj.disableMarkAsCompleted = obj.Status__c=='Dev Completed'
+                obj.disableMarkAsCompleted = obj.Status__c=='Dev Completed' || (obj.Break_Start_Time__c && !obj.Break_End_Time__c) || !obj.Actual_Task_End_Time__c;
 
                 console.log('longStartTime',obj);
                 this.tasks.push(obj);
@@ -280,14 +273,12 @@ export default class TaskManagerChildView extends LightningElement {
     }
 
     endJob(){
-        debugger;
         this.isLoading = true;
         endJob({teliId:this.selectedJiraTask.Time_Entry_Line_Items__r[0].Id,taskId:this.selectedJiraTask.Id}).then(result=>{
             this.isLoading = false;
             if(result=='Success'){
                 this.showNotification('Success','Job ended Successfully!','success');
                 refreshApex(this.wiredResponse);
-               this.showTaskTestingflow=true;
             }else{
                 this.showNotification('Failed',result,'error');
             }
@@ -295,15 +286,13 @@ export default class TaskManagerChildView extends LightningElement {
     }
 
     markAsComplete(){
-        debugger;   
         this.isLoading = true;
-        markStatusAsComplete({taskId:this.selectedJiraTask.Id,testingFlow:this.testingFloww}).then(result=>{
+        markStatusAsComplete({taskId:this.selectedJiraTask.Id}).then(result=>{
             this.isLoading = false;
             console.log('Result---',result);
             if(result=='Success'){
                 this.showNotification('Success','Job marked as completed!','success');
                 refreshApex(this.wiredResponse);
-                 this.showTaskTestingflow=false;
             }else{
                 this.showNotification('Failed',result,'error');
             }
@@ -377,32 +366,26 @@ export default class TaskManagerChildView extends LightningElement {
 
     }
 
-  
-
     startBreak(){
-       debugger;
-        if(this.selectedJiraTask.Id){
-            this.selJiraTaskId = this.selectedJiraTask.Id;
-            this.showTimeBreakComp=true;
+        debugger;
+        if(this.selectedJiraTask.Total_Break_Time__c && this.selectedJiraTask.Total_Break_Time__c>5){
+            this.showNotification('Failed','Oppss, Break time can only be taken at once 😥','error');
+            return;
         }
-        //this.breckRecId=this.selectedJiraTask.BreakTimes__r[0].Id;
-        // markBreakAsStart({taskId:this.selectedJiraTask.Id,Description:'startBreak'}).then(result=>{
-        //     if(result=='Success'){
-        //         this.showNotification('Success','Break Time Started','success');
-        //         refreshApex(this.wiredResponse);
-        //     }else{
-        //         this.showNotification('Failed',result,'error');
-        //     }
-        // });
+        breakStartEnd({taskId:this.selectedJiraTask.Id,breakType:'startBreak'}).then(result=>{
+            if(result=='Success'){
+                this.showNotification('Success','Break Time Started','success');
+                refreshApex(this.wiredResponse);
+            }else{
+                this.showNotification('Failed',result,'error');
+            }
+        });
     }
 
-    endBreak(event){
-        debugger;
-         endBreakRecord({taskId:this.selectedJiraTask.Id,breakId:this.breakRecId}).then(result=>{
+    endBreak(){
+         breakStartEnd({taskId:this.selectedJiraTask.Id,breakType:'endBreak'}).then(result=>{
             if(result=='Success'){
                 this.showNotification('Success','Break Time Ended','success');
-                this.selectedJiraTask.disableStartBreak = false;
-                this.selectedJiraTask.disableEndBreak = true;
                 refreshApex(this.wiredResponse);
             }else{
                 this.showNotification('Failed',result,'error');
@@ -546,22 +529,5 @@ export default class TaskManagerChildView extends LightningElement {
         // });
         // this.dispatchEvent(evt);
     }
-
-    closedshowTaskTestingflow(){
-        this.showTaskTestingflow=false;
-        obj.disableMarkAsCompleted =false;
-    }
-
-      handleTestingFlow(e) {
-          debugger;
-        this.testingFloww = e.detail.value;
-    }
-    //added by shubham
-    handleBreakValueChanged(event) {
-        debugger;
-        this.breakRecId =  event.detail.recordid;
-        this.selectedJiraTask.disableStartBreak = true;
-        this.selectedJiraTask.disableEndBreak = false;
-        
-    }
+    
 }

@@ -66,8 +66,8 @@
                             </aura:if> 
                             
                             <div class="slds-m-around--xxx-large">               
-                              
-                                <lightning:card>                                    
+                                
+                                <lightning:card>
                                     
                                     <div style = "border-style: solid;margin :1%;height:20rem;width:96%" class="slds-scrollable_y" tabindex="0">
                                         <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-text-longform">
@@ -112,8 +112,9 @@
                                                 </tr>
                                             </thead>
                                             <aura:if isTrue="{!v.data.length > 0}">
+                                                
                                                 <tbody>
-                                                   
+                                                    
                                                     <aura:iteration items="{!v.data}" var="acc"  indexVar="index">
                                                         <tr class="slds-hint-parent">
                                                             

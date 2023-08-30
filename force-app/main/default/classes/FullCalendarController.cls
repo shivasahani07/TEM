@@ -100,10 +100,15 @@ global without sharing class FullCalendarController {
     }
     
     @AuraEnabled
-    Public Static void CreateHolidays(Holiday__c HolidaysRec){
+    Public Static Holiday__c CreateHolidays(Holiday__c HolidaysRec){
+        System.debug('HolidaysRec--'+HolidaysRec);
+
         try{
             system.debug('HolidaysRec::'+HolidaysRec);
-            insert HolidaysRec; 
+            //HolidaysRec.Manager__c='0052v00000gOuCEAA0';
+            //HolidaysRec.Status__c='On hold';
+            insert HolidaysRec;
+            return HolidaysRec;
         }
         catch (Exception e) {
             throw new AuraHandledException(e.getMessage());

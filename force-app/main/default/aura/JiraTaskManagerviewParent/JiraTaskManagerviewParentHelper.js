@@ -123,6 +123,4 @@
         component.set("v.data",data);
     }
     
-        
-    
 })

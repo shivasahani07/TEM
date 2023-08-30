@@ -19,7 +19,6 @@
     
     
     selectItem : function( component, event, helper ) {
-        debugger;
         if(!$A.util.isEmpty(event.currentTarget.id)) {
             var recordsList = component.get('v.recordsList');
             var index = recordsList.findIndex(x => x.value === event.currentTarget.id)
@@ -33,7 +32,6 @@
     },
     
     showRecords : function( component, event, helper ) {
-        debugger;
         if(!$A.util.isEmpty(component.get('v.recordsList')) && !$A.util.isEmpty(component.get('v.searchString'))) {
             $A.util.addClass(component.find('resultsDiv'),'slds-is-open');
         }
@@ -41,7 +39,6 @@
     
     
     removeItem : function( component, event, helper ){
-        debugger;
         component.set('v.selectedRecord','');
         component.set('v.value','');
         component.set('v.searchString','');

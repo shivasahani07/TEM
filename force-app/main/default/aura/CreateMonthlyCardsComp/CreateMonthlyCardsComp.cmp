@@ -13,10 +13,6 @@
     <aura:attribute name="isModalOpen" type="Boolean" default="true"/>
     <aura:attribute name="isModalOpenSecond" type="Boolean" default="false"/>
     
-    
-    
-    
-    
     <aura:if isTrue="{!v.isModalOpen}">
         
         <!-- Modal/Popup Box starts here-->
@@ -29,40 +25,60 @@
                                           alternativeText="close"
                                           variant="bare-inverse"
                                           class="slds-modal__close"/>
-                    <ui:message title="Card Management on a Monthly Basis" severity="warning" closable="true">
-                       Before proceeding, please ensure that the "Weekly Card checkbox" is updated.
+                    
+                    <ui:message title="Card Management on a Monthly Basis" severity="warning">
+                        <div style = "margin :1%;  text-align: center;">
+                            Before proceeding, please ensure that the "Weekly Card checkbox" is updated.
+                        </div>
                     </ui:message>
                 </header>
                 <!--Modal/Popup Box Body Starts here-->
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <div style = "border-style: solid;margin :1%">
-                        <div style = "margin :1%;  text-align: center;">
+                    <div style = "margin :1%;  text-align: center;">
+                        <b>
                             <div class="slds-grid">
                                 <div class="slds-col slds-size_3-of-12">
-                                    <lightning:input  type="date" aura:id="startdatetime" name="Today's Date" hour12="true"  disabled="true" value="{!v.currentDate}" />
+                                    <div style = "border-style: solid;margin :1%">
+                                        Date : {!v.currentDate}
+                                    </div>
                                 </div>
                                 <div class="slds-col slds-size_1-of-12">
                                 </div>
                                 <div class="slds-col slds-size_3-of-12">
-                                    <lightning:input  type="text" aura:id="startdatetime" name="Today's Days" hour12="true"  disabled="true" value="{!v.currentDay}" />
+                                    <div style = "border-style: solid;margin :1%">
+                                        Day : {!v.currentDay}
+                                    </div>
                                 </div>
                                 <div class="slds-col slds-size_1-of-12">
                                 </div>
                                 <div class="slds-col slds-size_4-of-12">
-                                    <lightning:input  type="text" aura:id="startdatetime" name="Today's Time" hour12="true"  disabled="true" value="{!v.currentTime}" />
+                                    <div style = "border-style: solid;margin :1%"> 
+                                        Time : {!v.currentTime}
+                                    </div>
                                 </div>
-                                
                             </div> 
-                        </div>
+                        </b>
+                    </div>
+                    <br/>
+                    <div style = "margin :1%;  text-align: center;">
+                        <ui:message title="Number of resource cards to be created" severity="info" >
+                             {!v.mappingDetails.resourceOnProjects}
+                        </ui:message>
+                        <br/>
+                        <ui:message title="Resources for which daily cards are created" severity="confirm" >
+                             {!v.mappingDetails.resourcesWithDailyCards}
+                        </ui:message>
+                        <br/>
+                        <ui:message title="Resources for which daily cards are not created " severity="error" >
+                            {!v.mappingDetails.resourcesWithoutDailyCards}
+                        </ui:message>
                     </div>
                 </div>
                 <!--Modal/Popup Box Footer Starts here-->
                 <footer class="slds-modal__footer">
-                    <lightning:button label="Update Mapping Boolean" variant="Brand" onclick="{!c.updatePRMData}"/>
+                    <lightning:button label="Reset Card Counter" variant="Brand" onclick="{!c.updatePRMData}"/>
                     <lightning:button label="{!v.dynamicButtonName}" variant="Brand" disabled="{!v.isDisbaled}" onclick="{!c.runBtach}"/>
                     <lightning:button label="CANCEL" variant="Neutral" onclick="{!c.getListWithoutCards}" />
-                    
-                    
                 </footer>
             </div>
         </section>

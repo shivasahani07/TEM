@@ -1,0 +1,6 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	
+     <ltng:require scripts="/lightning/lightningStrike.js"/>
+    <!-- Report Card component -->
+    
+</aura:component>

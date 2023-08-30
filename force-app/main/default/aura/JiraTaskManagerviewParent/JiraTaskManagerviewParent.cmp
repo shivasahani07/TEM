@@ -12,6 +12,7 @@
     <aura:attribute name="pageLoadData" type="boolean" default="false"/>
     <aura:attribute name="filledDescription" type="string" default=""/>
     <aura:attribute name="DesignDescription" type="string" default=""/>
+    <aura:attribute name="TaskRecordId" type="string" default=""/>
     <aura:attribute name="pageNumber" type="Integer" default="1"/>
     <aura:attribute name="pageSize" type="Integer" default="15"/>
     <aura:attribute name="isLastPage" type="Boolean" default="false"/>
@@ -26,7 +27,7 @@
     <aura:attribute name="draftValues" type="Jira_Task__c[]" default="[]"/>
 
     <aura:handler name="init" value="{! this }" action="{! c.init }"/>
-    <aura:handler event="force:refreshView" action="{!c.init}" />
+     <aura:handler event="force:refreshView" action="{!c.init}" />
 
     
     <lightning:card title="Available Tasks">
@@ -79,7 +80,7 @@
                                  onsort="{!c.handleSort}"
                                  editable="true"
                                  draftValues="{!v.draftValues}"
-            					 onsave="{! c.handleSaveEdition }"
+            					 onsave="{!c.handleSaveEdition}"
                                  />
             <div class="slds-clearfix">
                 <div class="slds-page-header" role="banner">
@@ -100,7 +101,7 @@
         </div>
     </aura:if>
     <aura:if isTrue="{!v.isModalOpen}">
-        <c:ShowTaskDescription isModalOpen="{!v.isModalOpen}" label="{!v.label}" filledDescription="{!v.filledDescription}" DesignDescription="{!v.DesignDescription}" isEditable="true"/>
+        <c:ShowTaskDescription isModalOpen="{!v.isModalOpen}" label="{!v.label}" filledDescription="{!v.filledDescription}" DesignDescription="{!v.DesignDescription}" isEditable="false"  recordId="{!v.TaskRecordId}"/>
     </aura:if> 
     
 </aura:component>

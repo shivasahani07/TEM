@@ -25,10 +25,5 @@
         }).then(function() {
             console.log('alert is closed');
         });
-    },
-    toggleHelper : function(component,event) {
-        var toggleText = component.find("tooltip");
-        $A.util.toggleClass(toggleText, "toggle");
     }
-    
 });

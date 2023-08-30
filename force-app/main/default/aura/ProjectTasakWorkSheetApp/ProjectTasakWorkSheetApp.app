@@ -1,4 +1,4 @@
 <aura:application  extends="force:slds">
-    <c:ProjectTasakWorkSheet></c:ProjectTasakWorkSheet>
+    <c:ReplyToTweet></c:ReplyToTweet>
 	
 </aura:application>

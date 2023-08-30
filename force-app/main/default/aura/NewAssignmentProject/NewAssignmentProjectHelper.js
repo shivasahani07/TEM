@@ -19,6 +19,7 @@
         });
         $A.enqueueAction(action);
     },
+    
     errorAlert: function(cmp, event , message) {
         this.LightningAlert.open({
             message: message,
@@ -28,6 +29,7 @@
             console.log('alert is closed');
         });
     },
+    
     successAlert: function(cmp, event , message) {
         this.LightningAlert.open({
             message: message,
@@ -37,6 +39,7 @@
             console.log('alert is closed');
         });
     },
+    
     warningAlert: function(cmp, event , message) {
         this.LightningAlert.open({
             message: message,

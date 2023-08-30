@@ -41,8 +41,6 @@
     },
     
     
-    
-    
     init: function (component, event, helper) {
         debugger;
         component.set('v.pageLoadData',true);
@@ -51,18 +49,18 @@
         //Setting the Coloumns
         component.set('v.columns',[
             {label: 'Jira ID', fieldName: 'Name', type: 'text' ,sortable :true , iconName: 'utility:trending'},
-            {label: 'Team Member', fieldName: 'Team_Member_Name__c', type: 'text' ,sortable :true ,  iconName: 'utility:people',editable: true},
-            {label: 'Project', fieldName: 'Project_Name__c', type: 'text' , sortable :true ,  iconName: 'utility:setup_assistant_guide',editable: true},
-            {label: 'Status', fieldName: 'Status__c', type: 'text', iconName: 'utility:target_mode',editable: true, sortable :true ,cellAttributes: {
+            {label: 'Team Member', fieldName: 'Team_Member_Name__c', type: 'text' ,sortable :true ,  iconName: 'utility:people', editable: true},
+            {label: 'Project', fieldName: 'Project_Name__c', type: 'text' , sortable :true ,  iconName: 'utility:setup_assistant_guide'},
+            {label: 'Status', fieldName: 'Status__c', type: 'text', iconName: 'utility:target_mode', editable: true, sortable :true ,cellAttributes: {
                 class:  {
                     fieldName: 'class'
                 }
             }},
             {label: 'Priority', fieldName: 'Priority__c', type: 'text',sortable :true,iconName: 'utility:priority',editable: true},
-            {label: 'Efforts', fieldName: 'Estimated_Efforts__c', type: 'text' , sortable :true,iconName: 'utility:type',editable: true},
-            {label: 'Timings', fieldName: 'Task_Start_Time__c', type: 'text',iconName: 'utility:holiday_operating_hours',editable: true},
-            {label: 'Task Start date', fieldName: 'Task_Start_Date__c', type: 'date' , sortable :true,iconName: 'utility:date_time',editable: true},
-            {label: 'Task End date', fieldName: 'Task_End_Date__c', type: 'date' ,sortable :true,iconName: 'utility:date_time',editable: true},
+            {label: 'Efforts', fieldName: 'Estimated_Efforts__c', type: 'text' , sortable :true,iconName: 'utility:type', editable: true},
+            {label: 'Timings', fieldName: 'Task_Start_Time__c', type: 'text',iconName: 'utility:holiday_operating_hours'},
+            {label: 'Task Start date', fieldName: 'Task_Start_Date__c', type: 'date' , sortable :true,iconName: 'utility:date_time', editable: true},
+            {label: 'Task End date', fieldName: 'Task_End_Date__c', type: 'date' ,sortable :true,iconName: 'utility:date_time', editable: true},
             {label: 'Assigned By', fieldName: 'Assigned_By_Name__c', type: 'text' , sortable :true , iconName: 'utility:questions_and_answers',editable: true},
             {label: 'Detail',type: "button", iconName: 'utility:summarydetail' ,typeAttributes: {
                 label: 'View',
@@ -73,7 +71,6 @@
                 iconPosition: 'right'
             }},
             {label: 'Delete',type: "button", iconName: 'utility:delete' ,typeAttributes: {
-                
                 //name: 'Delete',
                 title: 'Delete',
                 iconName: 'utility:delete',
@@ -109,32 +106,29 @@
             if(recId == taskData[i].Id){
             component.set("v.filledDescription",taskData[i].Description__c);
             component.set("v.DesignDescription",taskData[i].Solution_Details_if_any__c);
+            component.set("v.TaskRecordId",taskData[i].Id);
             component.set("v.isModalOpen",true);
         }
     }} },
- 
- 
-     handleSaveEdition:function (component, event, helper){
-    	debugger;
-    	var draftValues = event.getParam('draftValues');
-		var action = component.get("c.updateJtList");
-        action.setParams({
-            jtList: draftValues,
-        });
-      action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === 'SUCCESS') {
-                alert('SUCCESS');
-              $A.get('e.force:refreshView').fire();  
-            }else{
-                 alert('else part');
-            }
-          
-        });
-        
-        $A.enqueueAction(action);
-    
-    },
-        
-
+         handleSaveEdition:function (component, event, helper){
+            debugger;
+            var draftValues = event.getParam('draftValues');
+            var action = component.get("c.updateJtList");
+            action.setParams({
+                jtList: draftValues,
+            });
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+                if (state === 'SUCCESS') {
+                    alert('SUCCESS');
+                    $A.get('e.force:refreshView').fire();  
+                }else{
+                    alert('else part');
+                }
+                
+            });
+            
+            $A.enqueueAction(action);
+            
+        },
 })

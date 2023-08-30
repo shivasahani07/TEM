@@ -35,7 +35,7 @@
                             
                             <div>
                                 <div aura:id="input" class="slds-p-top_none" >
-                                    <lightning:input class="slds-p-top_none" variant="label-hidden" name="Search" value="{!v.sTerm}" onblur="{!c.onblur}" onclick="{!c.onfocus}" onchange="{!c.onchange}" placeholder="{!'Select ' + (v.label)}"/>
+                                    <lightning:input class="slds-p-top_none" variant="label-hidden" name="Search" value="{!v.sTerm}" onblur="{!c.onblur}" onclick="{!c.onfocus}" onchange="{!c.onchange}" placeholder="Select Module"/>
                                     <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right ">
                                         <span class="slds-icon slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true">
                                             <lightning:icon class="" iconName="utility:search" size="x-small" alternativeText="Search" />
@@ -45,7 +45,7 @@
                                 <aura:if isTrue="{!v.selected}">
                                     <div aura:id="lookup-pill" class="slds-pill-container slds-hide">
                                         <aura:iteration items="{!v.selected}" var="l">
-                                            <lightning:pill class="pillSize" label="{!l.Name__c}" name="{!l}" onremove="{! c.handleRemoveOnly }" href="{!'/'+(l.Id)}">
+                                            <lightning:pill class="pillSize" label="{!l.Name}" name="{!l}" onremove="{! c.handleRemoveOnly }" href="{!'/'+(l.Id)}">
                                                 <aura:set attribute="media">
                                                     <lightning:icon iconName="{!v.iconName}"  alternativeText="{!v.iconName}"/>
                                                 </aura:set>

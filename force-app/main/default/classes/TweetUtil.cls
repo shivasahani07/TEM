@@ -1,9 +1,9 @@
 public class TweetUtil {
     
-    final String oauthVersion = '1.1';
+    final String oauthVersion = '2';
     final String oauthConsumerKey = 'rbfyDgklaWxTzodtFUSkAKJSu';
     final String oauthConsumerSecret = '9naQVl6QQvTz5cHtQGDrsNOkV2isYvLVnUMBFADwDW65aHYioD';
-    final String baseUrl = 'https://api.twitter.com';
+    final String baseUrl = 'https://api.twitter.com/2/tweets';
     final String oauthSignatureMethod = 'HMAC-SHA1';
     //final String oauth_callback = '<YOUR VF PAGE URL>';
     
@@ -122,9 +122,9 @@ public class TweetUtil {
             TwitterResponseJSONParser trjp = (TwitterResponseJSONParser) System.JSON.deserialize(res.getBody(), TwitterResponseJSONParser.class);
             system.debug('id of the comment is'+trjp.id);
             if(res.getStatusCode() == 200){
-                caseDetails.Tweet_Comment_Id__c = string.valueOf(trjp.id);
-                caseDetails.Tweet_Comment_URL__c = 'https://twitter.com/'+caseDetails.tweet_related_to__c+'/status/'+string.valueOf(trjp.id);
-                update caseDetails;
+                //caseDetails.Tweet_Comment_Id__c = string.valueOf(trjp.id);
+                //caseDetails.Tweet_Comment_URL__c = 'https://twitter.com/'+caseDetails.tweet_related_to__c+'/status/'+string.valueOf(trjp.id);
+                //update caseDetails;
                 return true;
             }
             else{
@@ -265,27 +265,3 @@ public class TweetUtil {
         return source.subString(0, source.length()-numToRemove);
     }
 }
-
-/*
-//The following is an example of generating the sample oauth signature
-String sigBS = 'POST&https%3A%2F%2Fapi.twitter.com%2F1%2Fstatuses%2Fupdate.json&include_entities%3D';
-sigBS += 'true%26oauth_consumer_key%3Dxvz1evFS4wEEPTGEFPHBog%26oauth_nonce%3DkYjzVBB8Y0ZFabxSWbWovY';
-sigBS += '3uYSQ2pTgmZeNu2VS4cg%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1318622958%';
-sigBS += '26oauth_token%3D370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb%26oauth_version%3D1.0%';
-sigBS += '26status%3DHello%2520Ladies%2520%252B%2520Gentlemen%252C%2520a%2520signed%2520OAuth%2520r';
-sigBS += 'equest%2521';
-String signKey = 'kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw&LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE';
-Blob testMac = Crypto.generateMac('hmacSHA1', Blob.valueOf(sigBS), Blob.valueOf(signKey));
-//this is the hex representation
-//Should be: B6 79 C0 AF 18 F4 E9 C5 87 AB 8E 20 0A CD 4E 48 A9 3F 8C B6
-String testHex = EncodingUtil.convertToHex(testMac);  
-system.debug(testHex);
-//this is the actual oauth signature
-//Should be: tnnArxj06cWHq44gCs1OSKk/jLY=
-String testSignature = EncodingUtil.base64Encode(testMac);  
-system.debug(testSignature);
-//percent encoded oauth signature
-//Should be: tnnArxj06cWHq44gCs1OSKk%2FjLY%3D
-String testSignaturePercentEncoded = StringUtil.percentEncode(testSignature);
-system.debug(testSignaturePercentEncoded);  
-*/

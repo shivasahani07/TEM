@@ -8,6 +8,7 @@
     <aura:attribute name="ProjectLeadId" type="string" default=""/>
     <aura:attribute name="TeamMateId" type="string" default=""/>
     <aura:attribute name="assigneeId" type="string" default=""/>
+    <aura:attribute name="taskDate" type="date" default=""/>
     <aura:attribute name="filledDescription" type="string" default=""/>
     <aura:attribute name="DesignDescription" type="string" default=""/>
     <aura:attribute name="index" type="integer" default=""/>    
@@ -35,10 +36,6 @@
     <aura:attribute name="ProjectTaskListWrapper" type="List" default=""/>
     <!-- aura:handler name="init" value="{! this }" action="{! c.init }"/ -->
     
-    <!-- <aura:handler name="init" value="{!this}" action="{!c.}"/> -->
-    
-    
-    
     <lightning:card title="Task Assignment..📝📝" class="slds-text-title--caps">
         <aura:if isTrue="{!v.showSpinner}">
             <div class="exampleHolder">
@@ -46,23 +43,37 @@
             </div>
         </aura:if>
         <lightning:card >
+            <div class="slds-float_left slds-m-around_small slds-icon_container slds-icon-utility-add">
+                <h1 class="slds-page-header__title">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_2.5-of-5">
+                            <lightning:input  type="date" aura:id="startdatetime" value="{!v.taskDate}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                        </div>
+                        <div class="slds-col slds-size_2-of-5"  style="margin-top:1.3%">
+                            <button class="slds-button slds-button_success" onclick="{!c.doInit}">🔍Search Tasks</button>
+                        </div>
+                    </div>
+                </h1>
+            </div>
             <div class="slds-float_right slds-m-around_small slds-icon_container slds-icon-utility-add">
                 <h1 class="slds-page-header__title">Add Row
                     <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.handleAddRow}"/>
                 </h1>
             </div>
-            <div style = "border-style: solid;overflow-x:auto;width:100%;">
-                <table class="slds-table slds-table--striped slds-table_bordered slds-table_fixed-layout slds-max-medium-table_stacked" style="zoom: 80%;">
+            <div style = "border-style: solid">
+                <table class="slds-table slds-table--striped slds-table_bordered" style="zoom: 80%;">
                     
                     <thead>
-                        <tr>
+                        <tr >
                             <th scope="col">
                                 <span class="slds-truncate">
                                     <lightning:icon iconName="action:new_child_case" size="small" alternativeText="Indicates approval"/>
                                     Project
                                 </span>
                             </th>
-                            <th scope="col" >
+                            <th scope="col">
                                 <span class="slds-truncate">
                                     <lightning:icon iconName="action:add_file" size="small" alternativeText="Indicates approval"/>
                                     Module
@@ -102,7 +113,13 @@
                             <th scope="col">
                                 <span class="slds-truncate">
                                     <lightning:icon iconName="action:download" size="small" alternativeText="Indicates approval"/>
-                                    Upload Docs
+                                    Upload
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <lightning:icon iconName="utility:edit"  size="small" alternativeText="Indicates approval"/>
+                                    Edit
                                 </span>
                             </th>
                         </tr>
@@ -168,16 +185,26 @@
                                     <aura:if isTrue="{!!not(empty(acc.Id))}">
                                         <lightning:input name="jiraEsti" aura:id="startdatetime"  type="datetime"  value="{!acc.Task_Start_Date_Time__c}"/>
                                         <aura:set attribute="else">
-                                            <lightning:input  type="datetime" aura:id="startdatetime" name="Team Member" hour12="true"  disabled="true" value="{!acc.Task_Start_Date_Time__c}" />
+                                            <aura:if isTrue="{!acc.editableTrue}">
+                                                <lightning:input  type="datetime" aura:id="startdatetime" name="Team Member" hour12="true" value="{!acc.Task_Start_Date_Time__c}" />
+                                                <aura:set attribute="else">
+                                                    <lightning:input  type="datetime" aura:id="startdatetime" name="Team Member" hour12="true"  disabled="true" value="{!acc.Task_Start_Date_Time__c}" />
+                                                </aura:set>
+                                            </aura:if>
                                         </aura:set>
                                     </aura:if>
                                 </td>
                                 
                                 <td>
                                     <aura:if isTrue="{!!not(empty(acc.Id))}">
-                                        <lightning:input name="jiraEsti" type="datetime"  aura:id="enddatetime" value="{!acc.Task_End_Date_Time__c}"/>
+                                        <lightning:input name="jiraEsti" type="datetime"  aura:id="startdatetime" value="{!acc.Task_End_Date_Time__c}"/>
                                         <aura:set attribute="else">
-                                            <lightning:input type="datetime"  aura:id="enddatetime" name="Team Member" hour12="true" disabled="false" value="{!acc.Task_End_Date_Time__c}" />
+                                            <aura:if isTrue="{!acc.editableTrue}">
+                                                <lightning:input type="datetime"  aura:id="enddatetime" name="Team Member" hour12="true" value="{!acc.Task_End_Date_Time__c}" />
+                                                <aura:set attribute="else">
+                                                    <lightning:input type="datetime"  aura:id="enddatetime" name="Team Member" hour12="true" disabled="true" value="{!acc.Task_End_Date_Time__c}" />
+                                                </aura:set>
+                                            </aura:if>
                                         </aura:set>
                                     </aura:if>
                                 </td>
@@ -201,7 +228,18 @@
                                         </aura:if>
                                     </aura:if>
                                 </td>
-                                
+                                <td>
+                                    <br/>
+                                    
+                                    <aura:if isTrue="{!not(empty(acc.Id))}">
+                                        <aura:if isTrue="{!acc.Status__c == 'New'}">
+                                            <lightning:button name="{!acc.Id}" label="{!acc.Status__c}" iconName="utility:edit" iconPosition="left"  variant="destructive" onclick="{!c.editRecord}"/>
+                                            <aura:set attribute="else">
+                                                <lightning:button name="{!acc.Id}" label="{!acc.Status__c}" iconName="utility:edit" iconPosition="left" variant="brand" onclick="{!c.editRecord}"/>
+                                            </aura:set> 
+                                        </aura:if>
+                                    </aura:if>
+                                </td>
                                 
                             </tr>
                         </aura:iteration>

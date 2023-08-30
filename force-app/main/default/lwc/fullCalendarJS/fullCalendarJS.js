@@ -186,7 +186,7 @@ export default class FullCalendarJS extends LightningElement {
        });
        
        //format as per fullcalendar event object to create and render
-       let newevent = {Reason__c : this.title, Start_Date__c : this.startDate, End_Date__c: this.endDate,Contact__c:this.contactId,Type__c:this.HolidaTypes};
+       let newevent = {Reason__c : this.title, Start_Date__c : this.startDate, End_Date__c: this.endDate,Contact__c:this.contactId,Type__c:this.HolidaTypes,Status__c:'On hold',Manager__c:'0052v00000jEDHOAA4'};
        console.log(this.events);
        console.log('im beloe thia event');
 
@@ -200,7 +200,7 @@ export default class FullCalendarJS extends LightningElement {
 
            //To populate the event on fullcalendar object
            //Id should be unique and useful to remove the event from UI - calendar
-           newevent.id = result;
+           newevent.Id = result;
            //refreshApex(this.eventOriginalData);
 
            //renderEvent is a fullcalendar method to add the event to calendar on UI

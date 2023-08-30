@@ -1,10 +1,13 @@
-<aura:component >
+<aura:component controller="JiraTaskManagerViewHelper">
     
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
      <aura:attribute name="isEditable" type="boolean" default="true"/>
-    <aura:attribute name="filledDescription" type="string" default=""/>
-    <aura:attribute name="DesignDescription" type="string" default=""/>
+    <aura:attribute name="filledDescription" type="string" default="NOT ENTERD"/>
+    <aura:attribute name="DesignDescription" type="string" default="NOT ENTERD"/>
     <aura:attribute name="label" type="string" default=""/>
+    <aura:attribute name="recordId" type="string" default=""/>
+
+
     
     <div class="slds-m-around_xx-large">
         <aura:if isTrue="{!v.isModalOpen}">
@@ -42,8 +45,8 @@
                                           title="Cancel"
                                           onclick="{! c.closeModel }"/>
                         <lightning:button variant="brand"
-                                          label="OK"
-                                          title="OK"
+                                          label="Save"
+                                          title="Save"
                                           onclick="{!c.submitDetails}"/>
                     </footer>
                 </div>

@@ -1,3 +1,4 @@
 <aura:application extends="force:slds" >
-	<c:UpdateMilestones></c:UpdateMilestones>
+    <c:projectManagementDashboard></c:projectManagementDashboard>
+    <!--<c:UpdateMilestones></c:UpdateMilestones> -->
 </aura:application>

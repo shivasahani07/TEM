@@ -1,9 +1,11 @@
 <aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="AddModuleButtonHelper" >
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:attribute name="values" type="List" default="[]"/>
-    <aura:attribute name="recordId" type="Id" default="a1L6D00000AMWG2UAP"/>
+    <aura:attribute name="recordId" type="Id" default="a1L6D00000ANABDUA5"/>
     <aura:attribute name="MilestoneListt" type="Milestone__c[]" default="[]"/>
     <aura:attribute name="MilestoneList" type="Milestone__c[]" default="[]"/>
+    <aura:attribute name="porjectTitlewithName" type="string" default=""/>
+
     
     <aura:html tag="style">
         .slds-modal__container { 
@@ -21,7 +23,7 @@
         padding: 0 0rem !important;
         }
     </aura:html>
-    <lightning:card title="Manage Modules for This Project!!">
+    <lightning:card title="{!v.porjectTitlewithName}">
         <div style="margin:2%">
             <div class="slds-float_right slds-p-bottom_small">
                 <h1 class="slds-page-header__title">Add Row 
@@ -88,8 +90,8 @@
                         </aura:iteration>
                     </tbody>
                 </table>
-                <div class="slds-align_absolute-center slds-p-top_small">
-                    <lightning:button variant="brand" label="update" title="Brand action" onclick="{!c.updateMilestones}" />
+                <div class="slds-float_right slds-p-top_small">
+                    <lightning:button variant="brand" label="Save" title="Brand action" onclick="{!c.updateMilestones}" />
                 </div>
             </div>
         </div>

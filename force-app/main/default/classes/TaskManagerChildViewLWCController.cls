@@ -1,17 +1,12 @@
 public without sharing class TaskManagerChildViewLWCController {
     
     @AuraEnabled(cacheable=true)
-    public static List<Jira_Task__c> getAllTaskRelatedToContact(String conId, Integer selectedDate , Integer selectedMonth, Integer selectedYear){
-        system.debug('conId--'+conId);
-        system.debug('selectedDate--'+selectedDate);
-        system.debug('selectedMonth--'+selectedMonth);
-        system.debug('selectedYear--'+selectedYear);
-        
+    public static List<Jira_Task__c> getAllTaskRelatedToContact(String conId, Integer selectedDate, Integer selectedMonth, Integer selectedYear){
         try {
-
+            
             Date startDate = Date.newInstance(selectedYear,selectedMonth,selectedDate); 
-            Map<Id,Jira_Task__c> taskMap = new Map<Id,Jira_Task__c>([Select Id,Name,Actual_Task_Start_Time__c,Actual_Task_End_Time__c,Priority__c,Total_Break_Time__c,Solution_Details_if_any__c,Break_Start_Time__c,Break_End_Time__c,Description__c,Status__c,Project_Resource_Mapping__c,Actual_Efforts__c,Estimated_Efforts__c,Module__r.Name,Module__r.Project__r.Name,Is_BreakStart__c,(SELECT id,BreakTime__c,Description__c,End_Break__c,Jira_Task__c,Start_Break__c FROM BreakTimes__r WHERE End_Break__c = NULL),(Select Id,Name,Stat_Time_date__c,End_Time_Date__c,Status__c,Jira_Task__c From Time_Entry_Line_Items__r) From Jira_Task__c Where Status__c!='Deployed' And Task_Start_Date__c =:startDate AND (Team_Member__c = :conId OR Stand_By_Resource__c = :conId)]);
-            system.debug('taskMap------------'+taskMap);
+            Map<Id,Jira_Task__c> taskMap = new Map<Id,Jira_Task__c>([Select Id,Name,Actual_Task_Start_Time__c,Actual_Task_End_Time__c,Priority__c,Total_Break_Time__c,Solution_Details_if_any__c,Break_Start_Time__c,Break_End_Time__c,Description__c,Status__c,Project_Resource_Mapping__c,Actual_Efforts__c,Estimated_Efforts__c,Module__r.Name,Module__r.Project__r.Name,(Select Id,Name,Stat_Time_date__c,End_Time_Date__c,Status__c,Jira_Task__c From Time_Entry_Line_Items__r) From Jira_Task__c Where Status__c!='Deployed' And Task_Start_Date__c >=:startDate AND Task_End_Date__c<=:startDate AND (Team_Member__c = :conId OR Stand_By_Resource__c = :conId)]);
+            
             return taskMap.values();
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -32,14 +27,6 @@ public without sharing class TaskManagerChildViewLWCController {
     
     @AuraEnabled
     public static String  startJob(String taskId, string conId, Integer selectedDate, Integer selectedMonth, Integer selectedYear,String prmId){
-        System.debug('prmId--'+prmId);
-        System.debug('taskId--'+taskId);
-        System.debug('conId--'+conId);
-        System.debug('selectedDate--'+selectedDate);
-        System.debug('prmId--'+prmId);
-        System.debug('selectedMonth--'+selectedMonth);
-        System.debug('selectedYear--'+selectedYear);
-        System.debug('prmId--'+prmId);
         
         try {
             Jira_Task__c jTask = new Jira_Task__c(Id=taskId,Actual_Task_Start_Time__c=System.now(),Status__c='In Progress');
@@ -100,9 +87,6 @@ public without sharing class TaskManagerChildViewLWCController {
             
             Time_Entry_Line_Items__c tli = new Time_Entry_Line_Items__c(Id=teliId,Is_Completed__c=true,End_Time_Date__c=System.now());
             update tli;
-            
-
-            
             return 'Success';
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -110,12 +94,16 @@ public without sharing class TaskManagerChildViewLWCController {
     }
     
     @AuraEnabled
-    public static String endBreakRecord(String taskId,String breakId){
+    public static String breakStartEnd(String taskId, String breakType){
         try{
-            BreakTime__c insRec = new BreakTime__c();
-            insRec.End_Break__c=System.now();
-            insRec.ID=breakId;
-            update insRec;
+            Jira_Task__c jTask = new Jira_Task__c(Id=taskId);
+            if(breakType=='startBreak'){
+                jTask.Break_Start_Time__c = System.now();
+            }else{
+                jTask.Break_End_Time__c = System.now();
+            }
+
+            update jTask;
             return 'Success';
         }catch(Exception e){
             throw new AuraHandledException(e.getMessage());
@@ -123,28 +111,9 @@ public without sharing class TaskManagerChildViewLWCController {
     }
 
     @AuraEnabled
-    public static String createBreakRecord(String taskId,String Description){
-        try{
-            BreakTime__c btRec = new BreakTime__c();
-            btRec.Jira_Task__c = taskId ; 
-            btRec.Start_Break__c = system.now();
-            btRec.Description__c = Description;
-            insert btRec;
-            return btRec.Id;
-        }catch(exception e){
-            system.debug('Exception is '+e.getMessage() + '@' + e.getLineNumber() );
-            return null;
-        }
-    }
-
-
-    @AuraEnabled
-    public static string markStatusAsComplete(String taskId,String testingFlow){
-        system.debug('taskId'+taskId);
-        system.debug('testingFlow'+testingFlow);
-
+    public static string markStatusAsComplete(String taskId){
         try {
-            Jira_Task__c jTask = new Jira_Task__c(Id=taskId,Status__c='Dev Completed',Testing_Flow__c=testingFlow);
+            Jira_Task__c jTask = new Jira_Task__c(Id=taskId,Status__c='Dev Completed');
             update jTask;
             return 'Success';
         } catch (Exception e) {

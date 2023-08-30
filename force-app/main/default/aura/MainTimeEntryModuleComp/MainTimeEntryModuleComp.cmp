@@ -1,15 +1,14 @@
 <aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" controller="JiraTaskManagerViewHelper">
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
     <aura:attribute name="isUploadOpen" type="boolean" default="false"/>
-    <aura:attribute name="isModuleUpdateOpen" type="boolean" default="false"/>
-    <aura:attribute name="isShowModal" type="boolean" default="false"/>
-    <aura:attribute name="showHolidays" type="boolean" default="false"/>
-
-
     <aura:attribute name="isCaseOpen" type="boolean" default="false"/>
     <aura:attribute name="addMember" type="boolean" default="false"/>
     <aura:attribute name="recordData" type="sobject" />
-    <aura:attribute name="recordId" type="String" default="0036D00000UyT7oQAF"/> />
+    <aura:attribute name="showHolidays" type="boolean" default="false"/>
+	<aura:attribute name="isModuleUpdateOpen" type="boolean" default="false"/>
+
+
+    <aura:attribute name="recordId" type="String" default="0036D00000UyT7oQAF" />
     <aura:attribute name="conDetails" type="Contact" />
     <aura:attribute name="ShowProgress" type="Boolean" default="false"/>
     <aura:attribute name="ShowManDashboard" type="Boolean" default="false"/>
@@ -18,29 +17,27 @@
     <aura:attribute name="ShowResDashboard" type="Boolean" default="false"/>
     <aura:attribute name="ShowAvaiableResource" type="Boolean" default="false"/>
     <aura:attribute name="titleName" type="String" />
+   <!-- <ltng:require scripts="{!$Resource.newRelic}"/> -->
     <!-- <ltng:require scripts="{!$Resource.sweetalert}"/> -->
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
-    <aura:handler event="force:refreshView" action="{!c.doInit}" />
-
+    
     <div style ="margin :1%;width :17%">
         <img src="{!$Resource.Util_Logo}"/>
     </div>
     
     <lightning:card title="{!v.titleName}">
-        <div style = "border-style: solid;margin :1%">
+        <div style = "border-style: solid;margin :1%" >
             <div style = "margin :1%">
                 <lightning:button variant="brand" onclick="{!c.showUploadComp }" label="Upload Jira Tasks..📝📝"/>
                 <lightning:button variant="brand" onclick="{!c.tagTeamMember }" label="Add Team Members..🚸🚸"/>
-                <lightning:button variant="brand" onclick="{!c.showModel }" label="View Calender..📆📆"/>
                 <lightning:button variant="brand" onclick="{! c.showCaseComp }" label="Submit a Case..🙋🏻🙋🏻"/>
                 <lightning:button variant="brand" onclick="{! c.showModuleUpdate }" label="Update Modules.."/>
-                <lightning:button variant="brand" onclick="{! c.showHolidayss }" label="Holidays"/>
+            	<lightning:button variant="brand" onclick="{! c.showHolidayss }" label="Holidays..📆📆"/>
+                <lightning:button variant="brand" onclick="{! c.showChatsComp }" label="Something coming here..️"/>
 
                 <br/>
                 <lightning:accordion aura:id="accordion" activeSectionName="A"
-                                     allowMultipleSectionsOpen="true"
-                                     onsectiontoggle="{! c.handleSectionToggle }"
-                                     >
+                                     allowMultipleSectionsOpen="true">
                     <aura:if isTrue="{!v.ShowResTasks}">
                         <lightning:accordionSection name="A" label="Today's Tasks..🗓️📝">
                             <aura:set attribute="actions">
@@ -93,23 +90,18 @@
                                         </div>
                                         <div class="slds-col">
                                             <span>
-                                                <c:ProgressRingComp themeAfterThreshold="orange" themeBeforeThreshold="orange" size="small" totalProgress="{!v.recordData.totalResources}" actualProgress="{!v.recordData.activeResources}" Legend="Resources Active..🙋🏻🙋🏻" resultFormat="Mix" threshold="50"/>  
-                                            </span>
-                                        </div>
-                                        <div class="slds-col">
-                                            <span>  
-                                                <c:ProgressRingComp themeAfterThreshold="green" themeBeforeThreshold="red" size="small" totalProgress="{!v.recordData.TotalTasks}" actualProgress="{!v.recordData.highPriorityTask}" Legend="High Priority Tasks..🧑‍💻🧑‍💻" resultFormat="Mix" threshold="50"/>  
+                                                <c:ProgressRingComp themeAfterThreshold="orange" themeBeforeThreshold="orange" size="small" totalProgress="{!v.recordData.TotalTasks}" actualProgress="{!v.recordData.highPriorityTask}" Legend="High priority task..🙋🏻🙋🏻" resultFormat="Mix" threshold="50"/>  
                                             </span>
                                         </div>
                                         <div class="slds-col">
                                             <span>
-                                                <c:ProgressRingComp themeAfterThreshold="red" themeBeforeThreshold="red" size="small" totalProgress="{!v.recordData.TotalTasks}" actualProgress="{!v.recordData.overDueTask}" Legend="Total No of Today's Task..📝📝" resultFormat="Mix" threshold="50"/>  
+                                                <c:ProgressRingComp themeAfterThreshold="red" themeBeforeThreshold="red" size="small" totalProgress="{!v.recordData.TotalTasks}" actualProgress="{!v.recordData.TotalTasks}" Legend="Total No of Today's Task..📝📝" resultFormat="Actual Number" threshold="50"/>  
                                             </span>
                                         </div>
                                         
                                         <div class="slds-col">
                                             <span>
-                                                <c:ProgressRingComp themeAfterThreshold="red" themeBeforeThreshold="red" size="small" totalProgress="{!v.recordData.totalWorkingToday}" actualProgress="{!v.recordData.overDueTask}" Legend="Task Hours Today.📝📝" resultFormat="Mix" threshold="50"/>  
+                                                <c:ProgressRingComp themeAfterThreshold="blue" themeBeforeThreshold="blue" size="small" totalProgress="{!v.recordData.totalWorkingToday}" actualProgress="{!v.recordData.totalWorkingToday}" Legend="Total Hours Task Created Todays.📝📝" resultFormat="Actual Number" threshold="50"/>  
                                             </span>
                                         </div>
                                     </div>
@@ -193,6 +185,7 @@
             </div>
         </div>
         
+        
         <aura:if isTrue="{!v.isUploadOpen}">
             <c:UploadJiraTasksModalComp isModalOpen="{!v.isUploadOpen}"/>
         </aura:if>
@@ -205,15 +198,13 @@
             <c:ProjectResourceMappingCmp isModalOpen="{!v.addMember}"/>
         </aura:if>
         
-        <aura:if isTrue="{!v.isModuleUpdateOpen}">
+           <aura:if isTrue="{!v.isModuleUpdateOpen}">
             <c:UpdateModuleforSite isModalOpen="{!v.isModuleUpdateOpen}" label="Update the Modules For a Project"/>
         </aura:if>
         
-        <aura:if isTrue="{!v.showHolidays}">
+         <aura:if isTrue="{!v.showHolidays}">
              <c:fullCalendarJS  contactId="{!v.recordId}" onmyevent="{!c.falsecalender}" aura:id ="mylwccmp" />
         </aura:if>
-          
-        
         
     </lightning:card>
 </aura:component>

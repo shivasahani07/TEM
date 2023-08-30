@@ -2,17 +2,17 @@
     doInit : function(component, event, helper) {
         debugger;
         var recId = component.get("v.recordId");
-        var action = component.get("c.FetchBasicCaseDetails");
+        var action = component.get("c.getCaseDetails");
         action.setParams({
-            caseId: recId
+            recordId: recId
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === 'SUCCESS') {
                 var serverresponse = response.getReturnValue();
-                component.set("v.tweetDescription",serverresponse.Tweet_Comments__c);
-                component.set("v.tweetReply",serverresponse.Comment_Replied__c);
-                component.set("v.tweetId",serverresponse.Tweet_Id__c);
+                component.set("v.tweetDescription",serverresponse[0].postCaption);
+                component.set("v.tweetReply",serverresponse[0].comment);
+                component.set("v.urlToPost",serverresponse[0].PostUrl);
             }else{
                 
             }
@@ -22,13 +22,13 @@
     replyToTweet : function(component) {
         debugger;
         component.set("v.showSpinner",true);
-        
+        var recId = component.get("v.recordId");
         var replyMessage = component.get("v.tweetReply");
         var tweetId  = component.get("v.tweetId");
-        var action = component.get("c.sendReplyToTheTweet");
+        var action = component.get("c.replyToTweetOnTwittter");
         action.setParams({
-            "tweetId" : tweetId ,
-            "message" : replyMessage 
+            "recordId" : recId ,
+            "textMessage" : replyMessage 
         });
         action.setCallback(this, function(response) { 
             var state = response.getState();

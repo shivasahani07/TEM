@@ -18,7 +18,7 @@
             <span class="slds-media__body">
                 <span class="slds-listbox">
                     <aura:if isTrue="{!v.isPRM}">
-                        {!v.myContact.Name__c} 
+                        {!v.myContact.Name} 
                         <aura:set attribute="else">
                             {!v.myContact.Name}               
                         </aura:set>

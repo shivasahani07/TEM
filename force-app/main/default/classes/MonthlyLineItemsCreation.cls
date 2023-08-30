@@ -101,7 +101,7 @@ public class MonthlyLineItemsCreation {
     Public Static porjectMappingWrapper  getMappingDetails(){
         List<Project_Resource_Mapping__c> totalResources    =[SELECT id,name,Card_Created__c,Contact__c,Project__c,Project_Name__c,Team_Member_Name__c,Type__c FROM Project_Resource_Mapping__c ];
         List<Project_Resource_Mapping__c> resourcesWithCard =[SELECT id,name,Card_Created__c,Contact__c,Project__c,Project_Name__c,Team_Member_Name__c,Type__c FROM Project_Resource_Mapping__c WHERE Card_Created__c= TRUE];
-        List<Project_Resource_Mapping__c> resourcesWithoutCard  =[SELECT id,name,Card_Created__c,Contact__c,Project__c,Project_Name__c,Team_Member_Name__c,Type__c FROM Project_Resource_Mapping__c WHERE Card_Created__c= True];
+        List<Project_Resource_Mapping__c> resourcesWithoutCard  =[SELECT id,name,Card_Created__c,Contact__c,Project__c,Project_Name__c,Team_Member_Name__c,Type__c FROM Project_Resource_Mapping__c WHERE Card_Created__c= false];
         porjectMappingWrapper wrapperRec = new porjectMappingWrapper();
         wrapperRec.resourceOnProjects = totalResources.size();
         wrapperRec.resourcesWithDailyCards = resourcesWithCard.size();

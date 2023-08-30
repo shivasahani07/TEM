@@ -57,7 +57,7 @@ global  without sharing class JiraTaskManagerViewHelper{
                 }  
                 ConList  = [SELECT Id,Name FROM Contact WHERE Id IN :contactIds AND Name Like :searchString+'%' LIMIT 4999];
             }else{
-                ConList = [SELECT Id,Name FROM Contact WHERE Name Like :searchString+'%' AND recordtypeId = '0122v000001SwBrAAK' LIMIT 4999];
+                ConList = [SELECT Id,Name FROM Contact WHERE Name Like :searchString+'%' AND recordtypeId = '0126D000002gYqAQAU' LIMIT 4999];
             }
             
             
@@ -115,18 +115,6 @@ global  without sharing class JiraTaskManagerViewHelper{
                 throw new AuraHandledException(err.getMessage());
             }
         }
-    }
-    
-    public class RecordsData{
-        @AuraEnabled
-        public String label;
-        @AuraEnabled
-        public String value;
-        public RecordsData(String label, String value){
-            this.label = label;
-            this.value = value;
-        }
-        
     }
     
     @AuraEnabled
@@ -267,36 +255,6 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         return wrapperlist;
     }
     
-    public class ProjectTaskListWrapper{
-        @AuraEnabled
-        public String JiraId{ get; set; }
-        
-        @AuraEnabled
-        public String TeamMember{ get; set; }
-        
-        @AuraEnabled
-        public String ProjectName{ get; set; }
-        
-        @AuraEnabled
-        public String ModuleName{ get; set; }
-        
-        @AuraEnabled
-        public String TaskDescription{ get; set; }
-        
-        @AuraEnabled
-        public Decimal EstimatedEffort{ get; set; }
-        
-        @AuraEnabled
-        public Decimal ActualEfforts{ get; set; }
-        
-        @AuraEnabled
-        public String IsOverDue{ get; set; }
-        
-        @AuraEnabled
-        public String Status{ get; set; }
-        
-    }
-    
     @AuraEnabled
     public static void getJiraTaskDetails(string projectid, string projectleadid, string teammateid, List<Jira_Task__c> jiraTaskList){
         system.debug('Project Id ====> ' + projectid);
@@ -316,8 +274,6 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         }
     }
     
-    // ===============================================================================================================================================================
-    // Getting Picklist Values
     @AuraEnabled
     public Static List<String> getPicklitValueFromSobject(Sobject objObject, String fieldName){
         system.debug('objObject --->' + objObject);
@@ -341,9 +297,26 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
     }
     
     @AuraEnabled
-    public Static List<Jira_Task__c> SaveRecordJira(String ProjectId, String TeamLeadId, String TeamMateId, List<Jira_Task__c> jiraTaskListRec){
+    public Static List<Jira_Task__c> SaveRecordJira(String ProjectId, String TeamLeadId, String TeamMateId, List<Jira_Task__c> jiraTaskListRec,List<Jira_Task__c> updatedjiraTaskList){
         //projectId : Get all the related PRM
         //tag the PRM Id corresponding to the Team Member in the Jira task..
+        system.debug('updatedjiraTaskList'+updatedjiraTaskList);
+        
+        for(Jira_Task__c jt : updatedjiraTaskList){
+            jt.Task_Start_Date_Time__c = roundToNextHour(jt.Task_Start_Date_Time__c).addMinutes(-330);
+            jt.Task_End_Date_Time__c = roundToNextHour(jt.Task_End_Date_Time__c).addMinutes(-330);
+            Long hours = updateRelateTime(jt.Task_End_Date_Time__c,jt.Task_Start_Date_Time__c);
+            if(hours > 10 ){
+                if( hours/24 > 1){
+                    Integer numberOfTasks = integer.valueOf(hours/24);
+                    hours = hours - 24*(14);
+                }
+            }
+            
+            jt.Estimated_Efforts__c =  hours ; 
+        }
+        update updatedjiraTaskList;
+        
         system.debug('PRM - Id'+jiraTaskListRec);
         List<Jira_Task__c> newjiraTaskListRec = new List<Jira_Task__c>();
         for(Jira_Task__c jt : jiraTaskListRec){
@@ -398,9 +371,25 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         return newjiraTaskListRec;
     }
     
+    public Static DateTime roundToNextHour(DateTime dt) {
+        system.debug('dt'+dt.minute());
+        if(dt.minute() == 15){
+            return dt.addHours(1).addMinutes(-15);
+        }else if(dt.minute() == 30){
+            return dt.addHours(1).addMinutes(-30);
+        }else if(dt.minute() == 45){
+            return dt.addHours(1).addMinutes(+15);
+        }else{
+            return dt;
+        }
+    }
+    
     @AuraEnabled
-    public static List<Jira_Task__c> fetchJiraTasks(Id assigneeId){
-        List<Jira_Task__c> newjiraTaskListRec = [Select id ,Task_Start_Date_Time__c , Task_End_Date_Time__c , Project_Name__c ,Stand_By_Resource_Name__c,Estimated_Start_Date__c, name ,Solution_Details_if_any__c,Description__c, Assigned_By_Name__c , Module_Name__c , Estimated_Efforts__c ,Team_Member_Name__c , Priority__c from Jira_Task__c where Assigned_By__c = :assigneeId AND Task_Start_Date__c = :System.today()];
+    public static List<Jira_Task__c> fetchJiraTasks(Id assigneeId , date DateValue){
+        if(DateValue == null){
+            DateValue = system.today();
+        }
+        List<Jira_Task__c> newjiraTaskListRec = [Select id ,Task_Start_Date_Time__c ,Status__c, Task_End_Date_Time__c , Project_Name__c ,Stand_By_Resource_Name__c,Estimated_Start_Date__c, name ,Solution_Details_if_any__c,Description__c, Assigned_By_Name__c , Module_Name__c , Estimated_Efforts__c ,Team_Member_Name__c , Priority__c from Jira_Task__c where Assigned_By__c = :assigneeId AND Task_Start_Date__c = :DateValue];
         for(Jira_Task__c jt : newjiraTaskListRec){
             jt.Task_Start_Date_Time__c = jt.Task_Start_Date_Time__c.addMinutes(330);
             jt.Task_End_Date_Time__c = jt.Task_End_Date_Time__c.addMinutes(330);
@@ -421,6 +410,20 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         return attach.Id;
     }
     
+    Public static Long updateRelateTime(dateTime dt1 , datetime dt2){
+        
+        Long dt1Long = dt1.getTime();
+        Long dt2Long = dt2.getTime();
+        Long milliseconds =  dt1Long - dt2Long;
+        Long seconds = milliseconds / 1000;
+        Long minutes = seconds / 60;
+        Long hours = minutes / 60;
+        system.debug('hours'+hours);
+        return hours;
+        //Long days = hours / 24;
+        
+    }
+    
     @AuraEnabled
     public static mainCompData getConDetails(String ConId){
         system.debug('ConId' + ConId );
@@ -430,13 +433,13 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         List<Project__c> ActiveProjectList = [SELECT Id,Active__c FROM Project__c where Active__c = true];
         
         //Contact Data
-        List<Contact> totalResources = [SELECT Id FROM Contact where RecordTypeId = '0122v000001SwBrAAK'];
-        List<Contact> ActiveResources = [SELECT Id FROM Contact where RecordTypeId = '0122v000001SwBrAAK' And Is_Resource_Available__c = true];
+        List<Contact> totalResources = [SELECT Id FROM Contact where RecordTypeId = '0126D000002gYqAQAU'];
+        List<Contact> ActiveResources = [SELECT Id FROM Contact where RecordTypeId = '0126D000002gYqAQAU' And Is_Resource_Available__c = true];
         
         //Jira Task 
         List<Jira_Task__c> totalJiraTasks = [SELECT Id FROM Jira_Task__c WHERE Estimated_Start_Date__c =:System.today()];
         List<Jira_Task__c> totalOverDueJiraTasks = [SELECT Id FROM Jira_Task__c where Is_Overdue__c = true];
-        List<Jira_Task__c> HighPriorityJiraTasks = [SELECT Priority__c FROM Jira_Task__c where Priority__c = 'High'];
+        List<Jira_Task__c> HighPriorityJiraTasks = [SELECT Priority__c FROM Jira_Task__c where Priority__c = 'High' AND Estimated_Start_Date__c =:System.today()];
         List<Jira_Task__c> DevCompletedJiraTasks  = [SELECT Status__c FROM Jira_Task__c where Status__c = 'Dev Completed'];
         
         //Bugs & Dependency
@@ -444,11 +447,10 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         List<Bug__c> Buglist = [SELECT Id FROM Bug__c];
         
         //individual Report 
+        List<Jira_Task__c> totalHoursTodayTask = [SELECT Actual_Efforts__c,Actual_Hours_Utilised__c,Estimated_Efforts__c,Estimated_Efforts_in_hour__c,Id FROM Jira_Task__c WHERE Estimated_Start_Date__c =:System.today()];
         List<Project_Resource_Mapping__c> individualProjects = [SELECT Id FROM Project_Resource_Mapping__c WHERE Contact__c = :ConId];
         List<Jira_Task__c> totalIndividualhighPriorityTasks = [SELECT Id,Priority__c FROM Jira_Task__c where Priority__c = 'High' AND Team_Member__c = :ConId];
         List<Jira_Task__c> totalcompletedHoursTask = [SELECT Actual_Efforts__c,Actual_Hours_Utilised__c,Id FROM Jira_Task__c WHERE Status__c = 'Dev Completed' ];
-        List<Jira_Task__c> totalHoursTodayTask = [SELECT Actual_Efforts__c,Actual_Hours_Utilised__c,Estimated_Efforts__c,Estimated_Efforts_in_hour__c,Id FROM Jira_Task__c WHERE Estimated_Start_Date__c =:System.today()];
-        
         List<Jira_Task__c> totalIndividualTasks = [SELECT Id,Priority__c,Estimated_Efforts__c,Actual_Hours_Utilised__c FROM Jira_Task__c where  Team_Member__c = :ConId];
         List<Bug__c> IndividualBuglist = [SELECT Id FROM Bug__c where Jira_Task__c In:totalIndividualTasks];
         List<Dependency__c> IndividualDependencylist = [SELECT Id,name,Depends_on__c FROM Dependency__c where Depends_on__c = :ConId];
@@ -462,11 +464,8 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
             }
         }
         system.debug('totalIndividualTasks'+totalIndividualTasks);
-        
-        
-        //added by shiva 
-        
         decimal totalIndHoursworked = 0;
+        
         if(totalIndividualTasks.size() > 0){
             for(Jira_Task__c jt : totalIndividualTasks){
                 if(jt.Estimated_Efforts__c != null){
@@ -475,7 +474,6 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
                 }
             }
         }
-        
         
         //ADDED BY SHIVA
         Decimal TodaysTaskEstimationHours =0;
@@ -488,7 +486,6 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
             }
             
         }
-        
         
         system.debug('totalIndHoursworked'+totalIndHoursworked);
         mainCompData mcd = new mainCompData();
@@ -583,10 +580,49 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         @AuraEnabled
         public Decimal totalWorkingToday{get;set;}
         
+    }   
+    
+    public class ProjectTaskListWrapper{
+        @AuraEnabled
+        public String JiraId{ get; set; }
         
+        @AuraEnabled
+        public String TeamMember{ get; set; }
+        
+        @AuraEnabled
+        public String ProjectName{ get; set; }
+        
+        @AuraEnabled
+        public String ModuleName{ get; set; }
+        
+        @AuraEnabled
+        public String TaskDescription{ get; set; }
+        
+        @AuraEnabled
+        public Decimal EstimatedEffort{ get; set; }
+        
+        @AuraEnabled
+        public Decimal ActualEfforts{ get; set; }
+        
+        @AuraEnabled
+        public String IsOverDue{ get; set; }
+        
+        @AuraEnabled
+        public String Status{ get; set; }
         
     }
     
+    public class RecordsData{
+        @AuraEnabled
+        public String label;
+        @AuraEnabled
+        public String value;
+        public RecordsData(String label, String value){
+            this.label = label;
+            this.value = value;
+        }
+        
+    }
     @AuraEnabled
     Public Static Void DeleteTskFromManagerDashboard(String Recid){
         system.debug('Recid::'+Recid);
@@ -595,24 +631,32 @@ whereClause += idByValueMap.get(keys)+' = '+keys+' OR Stand_By_Resource__c = '+k
         delete deleTask; 
     }
     
-    //added by shiva thart wil use in get CreateMonthlyCardsComp
-    //
-    
-    @AuraEnabled
-    Public Static list<Project_Resource_Mapping__c>  getunCaededPRMS(){
-        List<Project_Resource_Mapping__c> unCaededPRMSList=[SELECT id,name,Card_Created__c,Contact__c,Project__c,Project_Name__c,Team_Member_Name__c,Type__c FROM Project_Resource_Mapping__c WHERE Card_Created__c= FALSE];
-        return unCaededPRMSList;
-    }
-    @AuraEnabled
-    Public Static integer getCaededPRMS(){
-        List<Project_Resource_Mapping__c> getCaededPRMSList=[SELECT id,name,Card_Created__c,Contact__c,Project__c,Project_Name__c,Team_Member_Name__c,Type__c FROM Project_Resource_Mapping__c WHERE Card_Created__c= TRUE];
-        Integer totatRcord=getCaededPRMSList.size();
-        return totatRcord;
-    }
-    
     @AuraEnabled
     Public Static void updateJtList(List<Jira_Task__c> jtList){
         update jtList;
+    }
+    
+    
+    //update jiratsk  description from managerdashbord button
+    @AuraEnabled
+    Public Static void updateJtDescription(String recordId,String Description,String Sollution){
+        system.debug('recordId--'+recordId);
+        system.debug('Description--'+Description);
+        system.debug('Sollution--'+Sollution);
+        if(String.isEmpty(Sollution)){
+            Jira_Task__c jtDes = new Jira_Task__c();
+            jtDes.Id=recordId;
+            jtDes.Description__c=Description;
+            update jtDes;
+            
+        }
+        
+        Jira_Task__c jtDes = new Jira_Task__c();
+        jtDes.Id=recordId;
+        jtDes.Description__c=Description;
+        jtDes.Solution_Details_if_any__c=Sollution;
+        update jtDes;
+        
     }
     
     public Static void TestCoverage(){
