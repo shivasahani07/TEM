@@ -21,6 +21,16 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
     <aura:attribute name="searchKeyword" type="String" />
+
+     <!-- Pagination list -->
+     <aura:attribute name="paginationList" type="List"/>
+     <aura:attribute name="pageSize" type="Integer" default="10"/>
+     <aura:attribute name="totalSize" type="Integer"/>
+     <aura:attribute name="start" type="Integer" />
+     <aura:attribute name="end" type="Integer"/> 
+     
+     <aura:attribute name="next" type="boolean" />
+     <aura:attribute name="prev" type="boolean" />
     <!-- https://sales-productionsales.sandbox.lightning.force.com/lightning/r/Post_Comments__c/a1y6D0000017VFaQAM/related/Message_Attachments__r/view -->
      <lightning:card >
         
@@ -97,7 +107,7 @@
                                     </thead>
                                     
                                     <tbody>
-                                        <aura:iteration items="{!v.relatedCommentList}" var="acc">
+                                        <aura:iteration items="{!v.paginationList}" var="acc">
                                             <tr class="slds-hint-parent">
                                                 <th data-label="Name" scope="row">
                                                     <div class="slds-truncate" title="{!acc.comment}">
@@ -139,6 +149,10 @@
                                         </aura:iteration>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="slds-float_right slds-border_top">
+                                <lightning:button label="Previous" disabled="{!v.start == 0}"  onclick="{!c.Previous}" />
+                                <lightning:button label="Next" disabled="{!v.end >= v.totalSize}" onclick="{!c.Next}" />
                             </div>
                             <aura:set attribute="else">
                                 <p style="text-align: center;">
