@@ -1,78 +1,75 @@
 @isTest
 public class InstagramAuthHelperTest {
-    
-     @isTest
-    static void testGetAllPostsFromInstaForUserId() {
-        InstagramAuthHelper instance = new InstagramAuthHelper();
+    private static Id caseRecordTypeId                  = Schema.SObjectType.case.getRecordTypeInfosByName().get('Instagram').getRecordTypeId();
+    /*static testmethod void testsample(){  
+        Case caseRec = new Case();
+        caseRec.Post_Id__c = 'tweetId';
+        insert caserec;
+        
+        Post_Comments__c postComment = new Post_Comments__c(); 
+        postComment.Case__c= caserec.Id;
+        postComment.Comment_Id__c = 'commentId';
+        postComment.Replied_Comments__c = 'RepliesWrapper:[data=(ReplyData:[id=123, text=Test Reply 1, username=testuser1, timeStamp=2023-07-29T12:34:56+0000,Case__c=caseId])])';
+        insert postComment;
+        
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new InstagramAuthHelperTestMockTest());
+        InstagramAuthHelper.getAllPostsFromInstaForUserId();
+        Test.stopTest();
+    }*/
+    static testmethod void testsample2(){  
+        Case caseRec = new Case();
+        caseRec.Post_Id__c = '17841405793087218';
+        caseRec.RecordTypeId = caseRecordTypeId;
+        caseRec.Origin = 'Instagram';
+        insert caserec;
+        
+        Post_Comments__c postComment = new Post_Comments__c(); 
+        postComment.Case__c= caserec.Id;
+        postComment.Comment_Id__c = 'commentId';
+        postComment.Replied_Comments__c = 'RepliesWrapper:[data=(ReplyData:[id=123, text=Test Reply 1, username=testuser1, timeStamp=2023-07-29T12:34:56+0000,Case__c=caseId])])';
+        insert postComment;
+        
+        //String mockResponseJson = '{"data": [{"Id": "12345", "username": "testuser", "caption": "Test caption", "permalink": "https://www.instagram.com/p/12345", "timestamp": "2023-08-04T12:34:56+0000", "comments": {"data": [{"Id": "c1", "username": "user1", "text": "Comment 1", "replies": []}, {"Id": "c2", "username": "user2", "text": "Comment 2", "replies": [{"text": "Reply to Comment 2", "username": "user3", "timestamp": "2023-08-04T12:35:00+0000"}]}]}}]}';
+        Test.setMock(HttpCalloutMock.class, new InstagramAuthHelperTestMockTest());
+        
+        Test.startTest();
+        //Test.setMock(HttpCalloutMock.class, new InstagramAuthHelperTestMockTest());
+        InstagramAuthHelper.getAllPostsFromInstaForUserId();
+        Test.stopTest();
     }
-    /*
+    
+    static testmethod void getHashtagIdFromInsta_test(){  
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new InstagramAuthHelperTestMockTest());
+        InstagramAuthHelper.getHashtagIdFromInsta('INSTA');
+        Test.stopTest();
+    }
+    
+    static testmethod void getPostDetailsByHashTagId_test(){  
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new InstagramAuthHelperTestMockTest());
+        InstagramAuthHelper.getPostDetailsByHashTagId();
+        Test.stopTest();
+    }
+    
+    
     @isTest
-    static void testGetHashtagIdFromInsta() {
-        // Test data setup (if needed)
-        // Create Instagram_Api_Details__c custom setting record with required data
+    static void testGetAllMentionsFromInstaForUserId() {
+        String mockResponseJson = '{"data": [{"Id": "12345", "username": "testuser", "caption": "Test caption", "permalink": "https://www.instagram.com/p/12345", "timestamp": "2023-08-04T12:34:56+0000", "comments": {"data": [{"Id": "c1", "username": "user1", "text": "Comment 1", "replies": []}, {"Id": "c2", "username": "user2", "text": "Comment 2", "replies": [{"text": "Reply to Comment 2", "username": "user3", "timestamp": "2023-08-04T12:35:00+0000"}]}]}}]}';
+        Test.setMock(HttpCalloutMock.class, new InstagramAuthHelperTestMockTest());
+        Case testCase = new Case(
+            Subject = 'Test Case',
+            Description = 'Test description',
+            Post_Id__c = '12345',
+            Origin = 'Instagram',
+            recordtypeId = caseRecordTypeId // Make sure to use an actual Record Type Id
+        );
+        insert testCase;
         
-        // Set up mock HTTP callouts
-        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
-        
-        // Call the method to test
         Test.startTest();
-        String hashtagId = InstagramAuthHelper.getHashtagIdFromInsta('testHashtag');
+        InstagramAuthHelper.getAllMentionsFromInstaForUserId();
         Test.stopTest();
         
-        // Assertions (verify that the returned hashtagId is as expected)
-        // Example:
-        // System.assertEquals(EXPECTED_HASHTAG_ID, hashtagId);
     }
-    
-     @isTest
-    static void testGetPostDetailsByHashTagId() {
-        // Test data setup (if needed)
-        // Create Instagram_Api_Details__c custom setting record with required data
-
-        // Set up mock HTTP callout
-        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
-
-        // Call the method to test
-        Test.startTest();
-        InstagramAuthHelper.getPostDetailsByHashTagId('testHashtag');
-        Test.stopTest();
-
-        // Assertions (verify that the expected data was inserted into Salesforce)
-        List<Case> cases = [SELECT Id, Tweet_Id__c, Tweet_URL__c, Tweet_Comments__c FROM Case];
-        System.assertEquals(1, cases.size());
-        System.assertEquals('12345', cases[0].Tweet_Id__c);
-        System.assertEquals('https://instagram.com/p/abc123', cases[0].Tweet_URL__c);
-        System.assertEquals('{"data": [{"id": "54321", "text": "Test comment", "username": "commentuser", "timestamp": "2023-07-29T12:34:56Z", "replies": {"data": []}}]}', cases[0].Tweet_Comments__c);
-
-        List<Post_Comments__c> postComments = [SELECT Id, Case__c, Comment__c, Comment_Id__c, Commented_By__c, Post_Url__c, Post_comment_Time__c, Replied_Comments__c FROM Post_Comments__c];
-        System.assertEquals(1, postComments.size());
-        System.assertEquals(cases[0].Id, postComments[0].Case__c);
-        System.assertEquals('Test comment', postComments[0].Comment__c);
-        System.assertEquals('54321', postComments[0].Comment_Id__c);
-        System.assertEquals('commentuser', postComments[0].Commented_By__c);
-        System.assertEquals('https://instagram.com/p/abc123', postComments[0].Post_Url__c);
-        System.assertEquals('2023-07-29T12:34:56Z', postComments[0].Post_comment_Time__c);
-        System.assertEquals('{"data": []}', postComments[0].Replied_Comments__c);
-    }
-    
-      @isTest
-     static void testReplyToComment() {
-        // Test data setup (if needed)
-        // Create Post_Comments__c record with required data for the comment to which you want to reply
-
-        // Set up mock HTTP callout
-        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
-
-        // Call the method to test
-        Test.startTest();
-        InstagramAuthHelper.replyToComment('commentId', 'Test reply');
-        Test.stopTest();
-
-        // Assertions (verify that the reply is added to the comment)
-        List<Post_Comments__c> postComments = [SELECT Id, Replied_Comments__c FROM Post_Comments__c];
-        System.assertEquals(1, postComments.size());
-        System.assertEquals('RepliesWrapper:[data=(ReplyData:[id=17987241320233933, text=Test%20reply, username=replyuser])]', postComments[0].Replied_Comments__c);
-    }
-    // Write similar test methods for other methods in InstagramAuthHelper class
-    // */
 }
