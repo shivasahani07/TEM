@@ -20,7 +20,7 @@ public class InstagramAuthHelper {
     //Get all the posts that are related to this business user id
     @Future(callout=true)
     public static void getAllPostsFromInstaForUserId(){
-        List<case> existingCaseList = [Select id,subject,Description,Caption__c,Post_Id__c,(Select Comment__c,Comment_Id__c,Commented_By__c,Post_Url__c,Post_comment_Time__c from Post_Comments__r ) from case where recordTypeId = :caseRecordTypeId];
+        List<case> existingCaseList = [Select id,subject,Description,Caption__c,Post_Id__c,(Select Comment__c,Comment_Id__c,Commented_By__c,Post_Url__c,Post_comment_Time__c,Post_Comments__c.Case__c from Post_Comments__r ) from case where recordTypeId = :caseRecordTypeId];
         List<case> insertedCaseList = new List<case>();
         List<Post_Comments__c> postCommentList                    = new List<Post_Comments__c>();
         List<Post_Comments__c> postCommentListToBeUpdated         = new List<Post_Comments__c>();
