@@ -34,7 +34,7 @@
             <div style = "margin :1%">
                 
                 <div style="display:flex;">
-                    <img src="{!$Resource.TwitterLogo}" style="height:50px;"/>
+                    <!--img src="{!$Resource.TwitterLogo}" style="height:50px;"/-->
                     <lightning:buttonIcon iconName="utility:refresh" variant="bare" onclick="{! c.doInit }" alternativeText="Refresh"
                         title="Refresh" />
                 </div>

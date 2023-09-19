@@ -1,0 +1,219 @@
+<template>
+    <div class="container">
+        <div class="logo">
+
+            <p>  <img src={spring20Logo}> <span style="font-wight:bolder;font-size:16px;"> INSTAGRAM</span> </p>
+        </div>
+        <div class="Description">
+            <p>Instagram is a free photo and video sharing app available on iPhone and Android. 
+            People can upload photos or videos to our service and share them with their followers
+             or with a select group of friends. They can also view, comment and like posts shared
+              by their friends on Instagram. Anyone 13 and older can create an account by registering 
+              an email address and selecting a username.
+              le can upload photos or videos to our service and share them with their followers
+             or with a select group of friends. They can also view, comment and like posts shared
+              by their friends on Instagram. Anyone 13 and older can create an account by registering 
+              an email address and selecting a usernamle can upload photos or videos to our service and share them with their followers
+             or with a select group of friends. They can also view, comment and like posts shared
+              by their friends on Instagram. Anyone 13 and older can create an account by registering 
+              an email address and selecting a usernam</p>
+              <a target="_blank" href="https://upload.wikimedia.org/wikipedia/commons/1/1d/Godzilla_%281954%29.jpg" style="margin-top:10px;">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/1/1d/Godzilla_%281954%29.jpg" alt="Forest" style="width: 100px;margin-right:1rem;">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/1/1d/Godzilla_%281954%29.jpg" alt="Forest" style="width: 100px;margin-right:1rem;">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/1/1d/Godzilla_%281954%29.jpg" alt="Forest" style="width: 100px;margin-right:1rem;">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/1/1d/Godzilla_%281954%29.jpg" alt="Forest" style="width: 100px;margin-right:1rem;">
+             </a>
+        </div>
+        <div class="ButtonSearchbar" style="margin-top:2rem:">
+            <div>
+                <lightning-button variant="brand" label="View post on instagram" title="titleName" onclick={handleClick} style="margin-top:15px;margin-right:1rem;" icon-name='utility:preview'></lightning-button>
+                <lightning-button variant="brand" label="Refresh Comments" title="comments" onclick={handleClick} icon-name='utility:refresh'></lightning-button>
+            </div>
+
+            <div>
+               <lightning-input type="text" variant="standard" name="search"  placeholder="Search.." style="margin-top:-18px;width: 400px;"></lightning-input>
+            </div>
+        </div>
+        <div class="commentsTable">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+                            aria-labelledby="element-with-table-label other-element-with-table-label">
+                            <thead style="border-radius:8px;">
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="First Name">Comment </div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Last Name">Commented By</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Email">Date</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Email">Time</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Email">Action</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={recordsToDisplay} for:item="obj">
+                                    <tr class="inputRows" key={obj.CommentId}>
+                                         <td scope="col">
+                                            <div>{obj.comment}</div>
+                                         </td>
+                                        <td scope="col">
+                                            <div>{obj.comment}</div>
+                                         </td>
+                                         <td scope="col">
+                                            <div>{obj.comment}</div>
+                                         </td>
+                                         <td scope="col">
+                                            <div>{obj.comment}</div>
+                                         </td>
+                                         <td scope="col">
+                                            <div>
+                                                 <lightning-button title={obj.CommentId} name={obj.CommentedBy} value={obj.comment} variant="brand" label="Reply" onclick={openModel} class="slds-m-horizontal_medium"></lightning-button>
+                                                 <lightning-button title={obj.CommentId} name={obj.CommentedBy} value={obj.comment} variant="brand" label="View Replies" onclick={viewCommentReplies}></lightning-button>
+                                            </div>
+                                         </td>
+                                         
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+        </div>
+        <div class="Paginationfoooter">
+            <c-pagination-dynamic  list={relatedCommentList} onpagechanged={jobPaginationCallback}></c-pagination-dynamic>
+        </div>
+
+        
+        <div>
+            <template if:true={isModalOpen}>
+                <!-- Modal/Popup Box starts here -->
+                <div role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <template if:true={spinner}>
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative"
+                                    role="alert">
+                                    <span class="slds-assistive-text">Loading...</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- Modal/Popup Box Header Starts here -->
+                        <header class="slds-modal__header">
+                            <lightning-button-icon icon-name="utility:close" onclick={closeModel}
+                                alternative-text="close" variant="bare-inverse" class="slds-modal__close"></lightning-button-icon>
+                            <h1 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                <b>{selectedCommentValue}</b> <br />
+                                by: {selectedCommentRepliedBy}
+                            </h1>
+                        </header>
+
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <lightning-input-rich-text value={replyMessage}
+                                placeholder="Please Enter your reply" onchange={getReplyvalyChange}></lightning-input-rich-text>
+                        </div>
+                        <!-- Modal/Popup Box Footer Starts here -->
+                        <footer class="slds-modal__footer">
+                            <lightning-button variant="neutral" label="Cancel" title="Cancel" onclick={closeModel}></lightning-button>
+                            <lightning-button variant="brand" label="REPLY" title="REPLY" onclick={postComment}></lightning-button>
+                        </footer>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </div>
+
+        <div>
+            <template if:true={showReplies}>
+                <!-- Modal/Popup Box starts here -->
+                <div role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <template if:true={spinner}>
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative"
+                                    role="alert">
+                                    <span class="slds-assistive-text">Loading...</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- Modal/Popup Box Header Starts here -->
+                        <header class="slds-modal__header">
+                            <lightning-button-icon icon-name="utility:close" onclick={closeModel}
+                                alternative-text="close" variant="bare-inverse" class="slds-modal__close"></lightning-button-icon>
+                            <h1 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">
+                                <b>
+                                    {selectedCommentValue} <br />
+                                    by : <span style="color: blueviolet;">@{selectedCommentRepliedBy}</span>
+                                </b>
+                            </h1>
+                        </header>
+
+                        <lightning-card>
+                            <!-- <template if:true={relatedReplyList.length > 0}> -->
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                    <thead>
+                                        <tr class="slds-line-height_reset slds-text-title_caps">
+                                            <th class="slds-is-resizable" scope="col">
+                                                <div class="slds-truncate" title="Name">
+                                                    Comment
+                                                </div>
+                                            </th>
+                                            <th class="slds-is-resizable" scope="col">
+                                                <div class="slds-truncate" title="Account Number">
+                                                    Replied by
+                                                </div>
+                                            </th>
+                                            <th class="slds-is-resizable" scope="col">
+                                                <div class="slds-truncate" title="Account Number">
+                                                    Time
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <template for:each={relatedReplyList} for:item="acc">
+                                            <tr class="slds-hint-parent" key={acc.id}>
+                                                <th data-label="Name" scope="row">
+                                                    <div class="slds-truncate" title={acc.comment}>
+                                                        <lightning-formatted-rich-text value={acc.comment}></lightning-formatted-rich-text>
+                                                    </div>
+                                                </th>
+                                                <td data-label="Message">
+                                                    {acc.commented_by}
+                                                </td>
+                                                <td data-label="Message">
+                                                    {acc.post_comment_time}
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                                <template if:false={noReply}>
+                                    <div class="comment">
+                                        <p>No replies on this comment!!</p>
+                                    </div>
+                                </template>
+                            <!-- </template> -->
+                        </lightning-card>
+
+                        <footer class="slds-modal__footer">
+                            <lightning-button variant="neutral" label="Cancel" title="Cancel" onclick={closeModel}></lightning-button>
+                            <lightning-button variant="brand" label="REPLY" title="REPLY" onclick={postComment}></lightning-button>
+                        </footer>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </div>
+    </div>
+</template>

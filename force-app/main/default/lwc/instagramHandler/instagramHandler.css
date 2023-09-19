@@ -1,0 +1,83 @@
+.container{
+
+display: flex;
+width: 100%;
+  border: 2px solid #f00;
+  padding: 10px;
+  display:block;
+}
+
+.logo{
+	margin-top:	1rem;
+}
+
+.Description{
+	margin-top:	1rem;
+	text-overflow: ellipsis;
+	background-color: #F5F5F5;
+	font-size: 16px;
+	font-weight: bold;
+	
+}
+.Description p{
+  /* white-space: nowrap; 
+   width: 100%;
+  height: 20%; 
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  border: 1px solid #000000;
+ -webkit-line-clamp: 5;
+ -webkit-box-orient: vertical;
+display: -webkit-box; */
+	
+}
+
+.commentsTable{
+  margin-top: 1rem;
+ 
+
+}
+
+.ButtonSearchbar{
+	margin-top:	1rem;
+	display: flex;
+	justify-content: space-between;
+}
+.table{
+	margin-top:	1rem;
+}
+
+thead tr th{
+	margin-top:	1rem;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #D8D8D8;
+  color: black;
+}
+
+thead tr{
+  border-radius:8px;
+}
+
+.table td{
+
+	padding-top: 12px;
+  padding-bottom: 12px;
+  border-bottom: #FFFFFF;
+}
+
+tr td{
+	border-bottom: 1px f5f5f5f;
+}
+
+.inputWidth{
+    width: 450px;
+}
+
+
+
+/* Add a hover effect (blue shadow) */
+img:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}

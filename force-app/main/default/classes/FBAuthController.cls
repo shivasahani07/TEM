@@ -269,7 +269,7 @@ public class FBAuthController {
         }
     }
 
-    @AuraEnabled
+    @AuraEnabled(cacheable=true)
     public Static FacebookWrapper getCaseDetails(String recordId){
         
         List<Case> CaseDetails = [Select id,subject,Description,Caption__c,Post_Id__c,(Select Id,Comment_Type__c,Comment__c,Comment_Id__c,Replied_Comments__c,Commented_By__c,Post_Url__c,Post_comment_Time__c,CreatedDate FROM Post_Comments__r WHERE Sent__c = false ORDER BY CreatedDate DESC LIMIT 100) from case where id = :recordId];

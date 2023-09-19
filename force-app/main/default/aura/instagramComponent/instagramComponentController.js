@@ -20,7 +20,7 @@
                 component.set("v.totalSize", component.get("v.relatedCommentList").length);
                 component.set("v.start",0);
                 component.set("v.end",pageSize-1);
-                if(temResult>pageSize){
+                if(temResult.length>pageSize){
                     for(var i=0; i< pageSize; i++){
                         paginationList.push(temResult[i]);
                     }
@@ -157,19 +157,40 @@
         var pageSize = component.get("v.pageSize");
         var paginationList = [];
         var counter = 0;
-        for(var i=end+1; i<end+pageSize+1; i++){
-            if(oppList.length > end){
-                paginationList.push(oppList[i]);
-                counter ++ ; 
-            } 
+        if(end+pageSize+1 >oppList.length  ){
+            for(var i=end+1; i<oppList.length; i++){
+                //if(oppList.length > end){
+                    paginationList.push(oppList[i]);
+                    counter ++ ; 
+                //} 
+                component.set("v.isDisableNextBtn",true);
+                
+            }
+            
         }
+        else {
+            for(var i=end+1; i<end+pageSize+1; i++){
+                //if(oppList.length > end){
+                    paginationList.push(oppList[i]);
+                    counter ++ ; 
+               // } 
+            }
+            
+        }
+        
         start = start + counter;
         end = end + counter;
         component.set("v.start",start);
         component.set("v.end",end);
         component.set('v.paginationList', paginationList);
+        /*if(oppList.length == end + counter){
+            component.set("v.")
+        }*/
         
     },
+    
+    
+    
     Previous:function(component, event, helper){
         debugger;
         var oppList = component.get("v.relatedCommentList");
@@ -178,20 +199,22 @@
         var pageSize = component.get("v.pageSize");
         var paginationList = [];
         var counter = 0;
+        
         for(var i= start-pageSize; i < start ; i++){
             if(i > -1){
                 paginationList.push(oppList[i]);
                 counter ++;
             }else {
                 start++;
-                }
+            }
+            
         }
         start = start - counter;
         end = end - counter;
         component.set("v.start",start);
         component.set("v.end",end);
         component.set('v.paginationList', paginationList);
-
-
-    },
+        
+        
+    }, 
 })

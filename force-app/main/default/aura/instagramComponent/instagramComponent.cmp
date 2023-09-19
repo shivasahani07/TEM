@@ -21,6 +21,7 @@
     <aura:attribute name="offset" type="integer" />
     
     <aura:attribute name="paginationList" type="List"/>
+    <aura:attribute name="isDisableNextBtn" type="boolean" default="false"/>
     <aura:attribute name="pageSize" type="Integer" default="3"/>
     <aura:attribute name="totalSize" type="Integer"/>
     <aura:attribute name="start" type="Integer" />
@@ -95,11 +96,11 @@
                                     <tbody>
                                         <aura:iteration items="{!v.paginationList}" var="acc">
                                             <tr class="slds-hint-parent">
-                                                <th data-label="Name" scope="row">
+                                                <td data-label="Name" scope="row">
                                                     <div class="slds-truncate" title="{!acc.comment}">
                                                         {!acc.comment}
                                                     </div>
-                                                </th>
+                                                </td>
                                                 <td data-label="Message">
                                                     {!acc.CommentedBy}
                                                 </td>
@@ -121,7 +122,7 @@
                                 </table>
                                 <div class="slds-float_right slds-border_top">
                                     <lightning:button label="Previous" disabled="{!v.start == 0}"  onclick="{!c.Previous}" />
-                                    <lightning:button label="Next" disabled="{!v.end >= v.totalSize}" onclick="{!c.Next}" />
+                                    <lightning:button label="Next" disabled="{!v.isDisableNextBtn}" onclick="{!c.Next}" />
                                 </div>
                                 <aura:set attribute="else">
                                     <p style="text-align: center;">
