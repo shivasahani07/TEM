@@ -1,13 +1,20 @@
 import { LightningElement,api,wire,track } from 'lwc';
 import instLogo from '@salesforce/resourceUrl/FacebookLogo';
 import { refreshApex } from '@salesforce/apex';
-
+import getSessionId from '@salesforce/apex/FBAuthController.getSessionId';
+import { loadScript } from "lightning/platformResourceLoader";
+import cometdlwc from "@salesforce/resourceUrl/cometd";
 import getCaseDetails from '@salesforce/apex/FBAuthController.getCaseDetails';
 import getRepliesDetails from '@salesforce/apex/FBAuthController.getRepliesDetails';
 import postCommentToFB from '@salesforce/apex/FBAuthController.postCommentToFB';
 
 
 export default class FacebookHandler extends LightningElement {
+
+//FOR COMET D
+libInitialized = false;
+    @track sessionId;
+    @track error;
 
     spring20Logo = instLogo;
     @api recordId='5006D000006aq7jQAA';
@@ -68,6 +75,24 @@ export default class FacebookHandler extends LightningElement {
         this.error = undefined;
         } else if (error) {
             this.error = error;
+        }
+    }
+
+
+     @wire(getSessionId)
+    wiredSessionId({ error, data }) {
+        if (data) {
+            console.log(data);
+            this.sessionId = data;
+            this.error = undefined;
+            loadScript(this, cometdlwc)
+            .then(() => {
+                this.initializecometd()
+            });
+        } else if (error) {
+            console.log(error);
+            this.error = error;
+            this.sessionId = undefined;
         }
     }
 

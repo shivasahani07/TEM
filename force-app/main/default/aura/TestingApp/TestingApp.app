@@ -1,5 +1,5 @@
 <aura:application extends="force:slds">
-    <!--c:instagramHandler/-->
+    <c:instagramHandler/>
     <!--c:paginationDynamic/-->
-    <c:facebookHandler/>
+    <!--c:facebookHandler/-->
 </aura:application>
